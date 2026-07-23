@@ -2,9 +2,12 @@
 
 > Input your product feature ideas. Get RICE scores, an effort vs. impact matrix, and a sprint roadmap — powered by NVIDIA NIM in seconds.
 
-![PriorityAI](https://img.shields.io/badge/Powered%20by-NVIDIA%20NIM-76b900?style=for-the-badge&logo=nvidia)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel)](https://01-feature-prioritizer.vercel.app)
+![Powered by NVIDIA NIM](https://img.shields.io/badge/Powered%20by-NVIDIA%20NIM-76b900?style=for-the-badge&logo=nvidia)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
 ![AI PM Portfolio](https://img.shields.io/badge/AI%20PM-Portfolio%20Project%201%2F5-f59e0b?style=for-the-badge)
+
+🌐 **Live App:** [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app)
 
 ---
 
