@@ -26,6 +26,26 @@ You input feature ideas → NVIDIA's Llama 3.3 70B model scores each one using t
 
 ---
 
+## 📸 Interface & Visual Tour
+
+### 🎯 Feature Input & Analysis Form
+Input feature names, detailed descriptions, and functional categories.
+![Feature Input Interface](docs/screenshots/home_input.png)
+
+### 🃏 1. RICE Score Cards View
+Ranked cards displaying calculated RICE scores, confidence percentages, AI-generated reasoning, and automated risk tags.
+![RICE Score Cards](docs/screenshots/score_cards.png)
+
+### 📊 2. Interactive Effort vs. Impact 2×2 Matrix
+Dynamic Chart.js bubble plot categorizing features across Effort (person-months) vs Impact (1–10).
+![Effort vs Impact Matrix](docs/screenshots/matrix_chart.png)
+
+### 🗺️ 3. NOW / NEXT / LATER Sprint Roadmap
+Automated sprint swim lanes categorizing immediate priority items vs backlog tasks.
+![Sprint Roadmap](docs/screenshots/sprint_roadmap.png)
+
+---
+
 ## RICE Framework
 
 $$\text{RICE Score} = \frac{\text{Reach} \times \text{Impact} \times \text{Confidence}}{\text{Effort}}$$
