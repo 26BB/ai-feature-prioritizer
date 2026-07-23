@@ -1,0 +1,430 @@
+/* ponytail: Results page CSS — scoped to results route only. Global tokens live in globals.css. */
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: var(--space-3xl);
+}
+
+/* LOADING FALLBACK */
+.loading {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingText {
+  color: var(--text-muted);
+  font-size: 14px;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* NAVBAR ELEMENTS (local) */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  font-size: 1.4rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logoText {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.breadcrumbLink {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumbLink:hover { color: var(--primary-light); }
+
+.breadcrumbSep { color: var(--text-muted); }
+
+.breadcrumbCurrent {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.exportBtns {
+  display: flex;
+  gap: 8px;
+}
+
+/* STATS BAR */
+.statsBar {
+  position: relative;
+  z-index: 1;
+  background: rgba(10, 10, 15, 0.6);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 0;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  overflow-x: auto;
+}
+
+.statItem {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.statVal {
+  font-family: var(--font-headline);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+/* TABS */
+.tabBar {
+  position: relative;
+  z-index: 1;
+  padding: 20px 0 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: var(--primary-dim);
+}
+
+.tabActive {
+  color: var(--primary-light);
+  border-bottom-color: var(--primary);
+  background: var(--primary-dim);
+}
+
+/* MAIN */
+.main {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--space-xl);
+}
+
+/* SCORE CARDS GRID */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.scoreCard {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.scoreCard:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.featureName {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.riceScore {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.riceLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* LOW FIX: was empty — now has purpose */
+.component {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+.componentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.componentLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.componentVal {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-headline);
+}
+
+.componentBar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.componentFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* REASONING */
+.reasoning {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.6;
+  border-left: 2px solid var(--border-glow);
+  padding-left: 10px;
+}
+
+/* RISKS */
+.risks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* CHART TAB */
+.chartSection {
+  padding: 24px;
+  position: relative;
+}
+
+.chartHeader {
+  margin-bottom: 16px;
+}
+
+.chartHeader h2 {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.chartSubtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ponytail: Quadrant labels are positioned absolutely — works at fixed chart height only */
+.quadrantLabels {
+  position: relative;
+  height: 0;
+}
+
+.ql {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  z-index: 2;
+}
+
+.qlTL { top: 12px; left: 80px; background: rgba(16,185,129,0.10); color: #34d399; }
+.qlTR { top: 12px; right: 160px; background: rgba(245,158,11,0.10); color: #fbbf24; }
+.qlBL { bottom: -460px; left: 80px; background: rgba(120,113,108,0.10); color: #a8a29e; }
+.qlBR { bottom: -460px; right: 160px; background: rgba(244,63,94,0.10); color: #fb7185; }
+
+.chartContainer {
+  position: relative;
+  height: 480px;
+}
+
+/* ROADMAP TAB */
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.swimLane {}
+
+.laneHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.laneNow { background: rgba(6,214,160,0.1); color: var(--secondary); border: 1px solid rgba(6,214,160,0.2); }
+.laneNext { background: rgba(124,58,237,0.1); color: var(--primary-light); border: 1px solid rgba(124,58,237,0.2); }
+.laneLater { background: rgba(107,114,128,0.1); color: #9ca3af; border: 1px solid rgba(107,114,128,0.2); }
+
+.laneCount {
+  margin-left: auto;
+  background: rgba(255,255,255,0.08);
+  border-radius: var(--radius-full);
+  padding: 1px 10px;
+  font-size: 12px;
+}
+
+.laneCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.emptyLane {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  grid-column: 1/-1;
+}
+
+.roadmapCard {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roadmapTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.roadmapName {
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.roadmapScore {
+  font-family: var(--font-headline);
+  font-size: 1.2rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.roadmapComponents {
+  display: flex;
+  gap: 8px;
+}
+
+.miniStat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+}
+
+.miniLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.miniVal {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-headline);
+  color: var(--text-primary);
+}
+
+.roadmapReason {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.roadmapActions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
