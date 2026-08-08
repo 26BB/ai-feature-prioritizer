@@ -24,15 +24,15 @@ Enter feature names, descriptions, and categories to run AI RICE scoring.
 
 ### 🃏 3. AI RICE Score Cards & Results
 Multi-provider AI scores each feature on Reach, Impact, Confidence, and Effort with LLM reasoning.
-![RICE Score Cards](docs/screenshots/retro_scorecards.png)
+![RICE Score Cards](docs/screenshots/retro_scorecards_v4.png)
 
 ### 📊 4. Interactive Effort vs. Impact 2×2 Matrix
 Visual Effort vs Impact bubble plot categorizing features across high-impact quadrants instantly.
-![Effort vs Impact Matrix](docs/screenshots/retro_matrix.png)
+![Effort vs Impact Matrix](docs/screenshots/retro_matrix_v4.png)
 
 ### 🗺️ 5. NOW / NEXT / LATER Sprint Roadmap
 Organized sprint swim lanes ready for 1-click export to Jira, Linear, or Notion.
-![Sprint Roadmap](docs/screenshots/retro_roadmap.png)
+![Sprint Roadmap](docs/screenshots/retro_roadmap_v4.png)
 
 ---
 
