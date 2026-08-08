@@ -12,23 +12,27 @@
 
 ---
 
-## 📸 Visual Tour & Screenshots
+## 📸 Visual Tour & Screenshots (Retro Vintage Paperback Edition)
 
-### 🎯 1. SaaS Landing Home Page & Feature Input
-Enter your feature names, quick descriptions, and categories.
-![Feature Input Interface](docs/screenshots/home_input.png)
+### 🎯 1. SaaS Landing Home Page
+High-converting home page with live RICE scorecard teasers and feature grid.
+![SaaS Landing Home Page](docs/screenshots/retro_home.png)
 
-### 🃏 2. AI RICE Score Cards
-AI scores each feature on Reach, Impact, Confidence, and Effort, explaining *why* it got that score.
-![RICE Score Cards](docs/screenshots/score_cards.png)
+### ⚡ 2. Prioritizer Workspace (`/analyze`)
+Enter feature names, descriptions, and categories to run AI RICE scoring.
+![Prioritizer Workspace](docs/screenshots/retro_workspace.png)
 
-### 📊 3. Interactive Effort vs. Impact 2×2 Matrix
-A visual bubble plot that shows you immediately which features give maximum result for minimum effort.
-![Effort vs Impact Matrix](docs/screenshots/matrix_chart.png)
+### 🃏 3. AI RICE Score Cards & Results
+Multi-provider AI scores each feature on Reach, Impact, Confidence, and Effort with LLM reasoning.
+![RICE Score Cards](docs/screenshots/retro_scorecards.png)
 
-### 🗺️ 4. NOW / NEXT / LATER Sprint Roadmap
-Features are automatically organized into sprint lanes (`NOW`, `NEXT`, and `LATER`) ready to share with your team.
-![Sprint Roadmap](docs/screenshots/sprint_roadmap.png)
+### 📊 4. Interactive Effort vs. Impact 2×2 Matrix
+Visual Effort vs Impact bubble plot categorizing features across high-impact quadrants instantly.
+![Effort vs Impact Matrix](docs/screenshots/retro_matrix.png)
+
+### 🗺️ 5. NOW / NEXT / LATER Sprint Roadmap
+Organized sprint swim lanes ready for 1-click export to Jira, Linear, or Notion.
+![Sprint Roadmap](docs/screenshots/retro_roadmap.png)
 
 ---
 
@@ -37,8 +41,8 @@ Features are automatically organized into sprint lanes (`NOW`, `NEXT`, and `LATE
 - ⚡ **Calculates RICE Scores Automatically:** No spreadsheets or manual math needed.
 - 🔒 **Save Your Work:** Sign in with Google or Email to save past prioritizations.
 - 📱 **Install on Phone or PC:** Click **"📱 Install App"** to add it to your home screen like a native phone app.
-- 🔑 **Bring Your Own Key (BYOK):** Use your own free Google Gemini key or use server-provided AI.
-- ⬇️ **1-Click Export:** Download your prioritized roadmap as a CSV file to paste into Notion or Excel.
+- 🔑 **Bring Your Own Key (BYOK):** Use your own free Google Gemini key or server-provided AI.
+- ⬇️ **1-Click Export:** Download your prioritized roadmap as a CSV file.
 
 ---
 
