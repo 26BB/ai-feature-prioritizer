@@ -1,297 +1,234 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import styles from './landing.module.css';
+import pageStyles from './page.module.css';
+import ApiKeyModal from './components/ApiKeyModal';
+import AuthModal from './components/AuthModal';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-// Defined at module level so they aren't re-created on every render
-const CATEGORIES = ['AI/ML', 'Infrastructure', 'UX/Design', 'Growth', 'Analytics', 'Security', 'Other'];
-
-const LOADING_STEPS = [
-  'Parsing feature descriptions...',
-  'Calculating RICE scores with AI...',
-  'Generating sprint roadmap...',
-  'Preparing visualizations...',
-];
-
-/** Returns a fresh blank feature object. Function form prevents shared reference bugs. */
-const makeEmptyFeature = () => ({ name: '', description: '', category: 'AI/ML' });
-
-// ─── Component ────────────────────────────────────────────────────────────────
-export default function Home() {
+export default function LandingHome() {
   const router = useRouter();
-
-  const [features, setFeatures]   = useState([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState('');
-  const [currentStep, setCurrentStep] = useState(0);
-
-  // ─── Feature list mutations ──────────────────────────────────────────────
-  function addFeature() {
-    if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
-  }
-
-  function removeFeature(idx) {
-    // Always keep at least one card so the form is never empty
-    if (features.length > 1) setFeatures(features.filter((_, i) => i !== idx));
-  }
-
-  function updateFeature(idx, field, value) {
-    setFeatures(features.map((f, i) => (i === idx ? { ...f, [field]: value } : f)));
-  }
-
-  // ─── Submit ──────────────────────────────────────────────────────────────
-  async function handleAnalyze() {
-    // Only submit features that have a non-empty, non-whitespace name
-    const valid = features.filter((f) => f.name.trim());
-
-    if (valid.length === 0) {
-      setError('Please add at least one feature name.');
-      return;
-    }
-
-    setError('');
-    setLoading(true);
-    setCurrentStep(0);
-
-    // Advance the loading step indicator every 1.2 s for UX feedback
-    // ponytail: interval is cosmetic only; actual progress comes from the fetch resolving
-    const stepTimer = setInterval(() => {
-      setCurrentStep((prev) => {
-        const next = prev + 1;
-        if (next >= LOADING_STEPS.length) clearInterval(stepTimer);
-        return next;
-      });
-    }, 1200);
-
-    try {
-      const res  = await fetch('/api/prioritize', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ features: valid }),
-      });
-      const data = await res.json();
-      clearInterval(stepTimer);
-
-      if (!res.ok) {
-        setError(data.error || 'Something went wrong. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      // Pass results to the results page via sessionStorage
-      // ponytail: sessionStorage ceiling = same tab only; upgrade to URL param or server state for multi-tab
-      sessionStorage.setItem('priorityResults', JSON.stringify(data));
-      router.push('/results');
-    } catch {
-      clearInterval(stepTimer);
-      setError('Network error. Check your connection and try again.');
-      setLoading(false);
-    }
-  }
-
-  // ─── Loading screen ──────────────────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className={styles.loadingScreen}>
-        <div className="bg-pattern" />
-        <div className={`${styles.loadingCard} glass-card-elevated`}>
-          <div className={styles.nvidiaIcon}>⚡</div>
-          <h2>Analyzing Your Features</h2>
-          <p className={styles.loadingSubtitle}>Powered by NVIDIA · Llama 3.3 70B Instruct</p>
-
-          <div className={styles.steps}>
-            {LOADING_STEPS.map((label, i) => (
-              <div
-                key={label}
-                className={`${styles.stepRow} ${i <= currentStep ? styles.stepDone : ''}`}
-              >
-                <span className={styles.stepIcon}>
-                  {i < currentStep ? '✅' : i === currentStep ? '⏳' : '⬜'}
-                </span>
-                <span>{label}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${((currentStep + 1) / LOADING_STEPS.length) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ─── Main form ───────────────────────────────────────────────────────────
-  const filledCount = features.filter((f) => f.name.trim()).length;
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
-    <div className={styles.page}>
+    <div className={styles.landingPage}>
       <div className="bg-pattern" />
+
+      {/* Settings & Auth Modals */}
+      <ApiKeyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className={styles.logo}>
-          <span className={styles.logoIcon}>◈</span>
-          <span className={styles.logoText}>PriorityAI</span>
+        <div className={pageStyles.logo} onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
+          <span className={pageStyles.logoIcon}>◈</span>
+          <span className={pageStyles.logoText}>PriorityAI</span>
         </div>
-        <div className={styles.navLinks}>
-          <a href="#" className={styles.navLink}>Dashboard</a>
-          <a href="#" className={styles.navLink}>History</a>
-          <a href="#" className={styles.navLink}>Settings</a>
+        <div className={pageStyles.navLinks}>
+          <Link href="/" className={`${pageStyles.navLink} ${pageStyles.navActive}`}>Home</Link>
+          <Link href="/analyze" className={pageStyles.navLink}>Workspace</Link>
+          <Link href="/history" className={pageStyles.navLink}>My History</Link>
+          <button onClick={() => setIsModalOpen(true)} className={pageStyles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            ⚙️ Settings & BYOK
+          </button>
         </div>
-        <button className="btn-primary" style={{ padding: '8px 18px', fontSize: '13px' }}>
-          + New Session
-        </button>
-      </nav>
-
-      {/* ── Hero ── */}
-      <header className={styles.hero}>
-        <div className={styles.heroBadge}>✦ Powered by NVIDIA NIM</div>
-        <h1 className={styles.heroTitle}>
-          Prioritize Smarter{' '}
-          <span className={styles.heroGradient}>with AI</span>
-        </h1>
-        <p className={styles.heroSub}>
-          Input your feature ideas. Get RICE scores, effort vs impact analysis,
-          and a sprint roadmap — in seconds.
-        </p>
-      </header>
-
-      {/* ── Two-column layout ── */}
-      <main className={styles.main}>
-
-        {/* Left column: feature input cards */}
-        <section className={styles.inputSection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Your Features</h2>
-            <span className={styles.featureCount}>{filledCount}/{features.length} filled</span>
-          </div>
-
-          <div className={styles.featureList}>
-            {features.map((feature, idx) => (
-              <div key={idx} className={`${styles.featureCard} glass-card`}>
-                <div className={styles.cardHeader}>
-                  <span className={styles.featureNumber}>#{idx + 1}</span>
-                  {features.length > 1 && (
-                    <button
-                      onClick={() => removeFeature(idx)}
-                      className={styles.removeBtn}
-                      aria-label={`Remove feature ${idx + 1}`}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <div className={styles.fieldGroup}>
-                  <label htmlFor={`name-${idx}`} className={styles.fieldLabel}>Feature Name *</label>
-                  <input
-                    id={`name-${idx}`}
-                    className="input-field"
-                    placeholder="e.g. AI Auto-complete for search"
-                    value={feature.name}
-                    onChange={(e) => updateFeature(idx, 'name', e.target.value)}
-                  />
-                </div>
-
-                <div className={styles.fieldGroup}>
-                  <label htmlFor={`desc-${idx}`} className={styles.fieldLabel}>Description</label>
-                  <textarea
-                    id={`desc-${idx}`}
-                    className={`input-field ${styles.textarea}`}
-                    placeholder="What does this feature do? Who benefits? What problem does it solve?"
-                    value={feature.description}
-                    onChange={(e) => updateFeature(idx, 'description', e.target.value)}
-                    rows={3}
-                  />
-                </div>
-
-                <div className={styles.fieldGroup}>
-                  <label htmlFor={`cat-${idx}`} className={styles.fieldLabel}>Category</label>
-                  <select
-                    id={`cat-${idx}`}
-                    className="input-field"
-                    value={feature.category}
-                    onChange={(e) => updateFeature(idx, 'category', e.target.value)}
-                  >
-                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {features.length < 10 && (
-            <button onClick={addFeature} className={`btn-ghost ${styles.addBtn}`}>
-              + Add Feature
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {user ? (
+            <button
+              onClick={() => router.push('/history')}
+              className="btn-ghost"
+              style={{ padding: '6px 14px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <span>👤</span>
+              <span>{user.displayName || user.email}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="btn-ghost"
+              style={{ padding: '6px 14px', fontSize: '13px' }}
+            >
+              Sign In
             </button>
           )}
-
-          {error && <p className={styles.error} role="alert">⚠ {error}</p>}
-
-          <button
-            onClick={handleAnalyze}
-            className={`btn-primary ${styles.analyzeBtn}`}
-            disabled={loading}
+          <Link
+            href="/analyze"
+            className="btn-primary"
+            style={{ padding: '8px 18px', fontSize: '13px', textDecoration: 'none' }}
           >
-            Analyze Features →
+            + Launch Workspace
+          </Link>
+        </div>
+      </nav>
+
+      {/* ── Hero Section with Word Motion Animations ── */}
+      <header className={styles.heroSection}>
+        <div className={`${styles.badge} typewriter-cursor`}>
+          📖 Retro Vintage Paperbacks & Terracotta Yellow Edition
+        </div>
+        <h1 className={styles.heroTitle}>
+          <span className="word-float">Prioritize</span> <span className="word-float">Backlogs</span> <br />
+          <span className={styles.heroGradient}>10x Faster with AI RICE Scoring</span>
+        </h1>
+        <p className={styles.heroSubtitle}>
+          Turn raw feature ideas into <span className="word-float" style={{ fontWeight: '700', color: '#1A1613' }}>executive-ready</span> RICE scorecards, 2×2 Effort vs. Impact matrices,
+          and <span className="word-float" style={{ fontWeight: '700', color: '#1A1613' }}>NOW/NEXT/LATER</span> sprint roadmaps in seconds.
+        </p>
+
+        <div className={styles.ctaGroup}>
+          <Link href="/analyze" className={styles.primaryCta}>
+            ⚡ Launch Prioritizer Workspace →
+          </Link>
+          <button onClick={() => setIsModalOpen(true)} className={styles.secondaryCta}>
+            ⚙️ Configure Provider / BYOK
           </button>
-        </section>
+        </div>
+      </header>
 
-        {/* Right column: explainer sidebar */}
-        <aside className={styles.sidebar}>
-          <div className={`${styles.howItWorks} glass-card`}>
-            <h3 className={styles.sidebarTitle}>How it works</h3>
-            <div className={styles.steps}>
-              {HOW_IT_WORKS_STEPS.map((step, i) => (
-                <div key={i} className={styles.howStep}>
-                  <div className={styles.stepNumBadge}>{i + 1}</div>
-                  <div>
-                    <div className={styles.stepTitle}>{step.icon} {step.title}</div>
-                    <div className={styles.stepDesc}>{step.desc}</div>
-                  </div>
-                </div>
-              ))}
+      {/* ── Live Preview Teaser Card ── */}
+      <section className={styles.previewWrapper}>
+        <div className={styles.previewCard}>
+          <div className={styles.previewHeader}>
+            <div className={styles.previewDots}>
+              <div className={styles.dotRed} />
+              <div className={styles.dotYellow} />
+              <div className={styles.dotGreen} />
             </div>
+            <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#524941' }}>
+              Live RICE Scorecard Teaser
+            </span>
           </div>
 
-          <div className={`${styles.riceTip} glass-card`}>
-            <h4 className={styles.tipTitle}>📊 RICE Formula</h4>
-            <div className={styles.riceFormula}>
-              RICE = (Reach × Impact × Confidence) / Effort
+          <div className={styles.previewGrid}>
+            <div className={styles.sampleCard}>
+              <div className={styles.sampleTitle}>AI Semantic Search</div>
+              <div className={styles.sampleScore}>768 RICE</div>
+              <span className={styles.pillNow}>⚡ NOW — Sprint 1</span>
+              <p style={{ fontSize: '0.85rem', color: '#524941', marginTop: '10px' }}>
+                High reach (9/10) across enterprise users with low engineering effort (3/10).
+              </p>
             </div>
-            <div className={styles.riceComponents}>
-              {RICE_LEGEND.map((c) => (
-                <div key={c.label} className={styles.riceComponent}>
-                  <span className={styles.riceLabel}>{c.label}</span>
-                  <div>
-                    <div className={styles.riceName}>{c.name}</div>
-                    <div className={styles.riceDesc}>{c.desc}</div>
-                  </div>
-                </div>
-              ))}
+
+            <div className={styles.sampleCard}>
+              <div className={styles.sampleTitle}>Automated CSV Export</div>
+              <div className={styles.sampleScore}>540 RICE</div>
+              <span className={styles.pillNow}>⚡ NOW — Sprint 1</span>
+              <p style={{ fontSize: '0.85rem', color: '#524941', marginTop: '10px' }}>
+                High metric lift for user retention with minimal developer overhead.
+              </p>
+            </div>
+
+            <div className={styles.sampleCard}>
+              <div className={styles.sampleTitle}>Custom Webhook Triggers</div>
+              <div className={styles.sampleScore}>320 RICE</div>
+              <span className="pillNext" style={{ background: '#FFDE59', color: '#1A1613', border: '1.5px solid #1A1613', padding: '4px 10px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '800' }}>
+                🔜 NEXT — Sprint 2
+              </span>
+              <p style={{ fontSize: '0.85rem', color: '#524941', marginTop: '10px' }}>
+                Solid impact for power users; scheduled for next development cycle.
+              </p>
             </div>
           </div>
-        </aside>
-      </main>
+        </div>
+      </section>
+
+      {/* ── Metrics Banner ── */}
+      <section className={styles.metricsSection}>
+        <div className={styles.metricsGrid}>
+          <div>
+            <div className={styles.metricVal}>10,000+</div>
+            <div className={styles.metricLabel}>Features Prioritized</div>
+          </div>
+          <div>
+            <div className={styles.metricVal}>4+</div>
+            <div className={styles.metricLabel}>AI Providers Supported</div>
+          </div>
+          <div>
+            <div className={styles.metricVal}>100%</div>
+            <div className={styles.metricLabel}>Deterministic Math Fallback</div>
+          </div>
+          <div>
+            <div className={styles.metricVal}>0s</div>
+            <div className={styles.metricLabel}>Cached Instant Load</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Balanced 6-Card Feature Showcase Grid ── */}
+      <section className={styles.featuresSection}>
+        <h2 className={styles.sectionHeading}>
+          <span className="word-float">Everything</span> You Need to <span className="animated-word-shimmer">Align Stakeholders</span>
+        </h2>
+        <p className={styles.sectionSub}>Engineered specifically for Growth Product Managers, Tech Leads, and Founders.</p>
+
+        <div className={styles.featureGrid}>
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>🃏</span>
+            <h3 className={styles.featureTitle}>AI RICE Score Cards</h3>
+            <p className={styles.featureDesc}>
+              Automated scoring for Reach, Impact, Confidence, and Effort with LLM rationale and automated risk tags.
+            </p>
+          </div>
+
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>📊</span>
+            <h3 className={styles.featureTitle}>Interactive 2×2 Matrix</h3>
+            <p className={styles.featureDesc}>
+              Visual Effort vs. Impact bubble plots categorizing features across high-impact quadrants instantly.
+            </p>
+          </div>
+
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>🗺️</span>
+            <h3 className={styles.featureTitle}>NOW / NEXT / LATER Roadmaps</h3>
+            <p className={styles.featureDesc}>
+              Auto-grouped sprint swimlanes with 1-click CSV export ready for Jira, Linear, or Notion.
+            </p>
+          </div>
+
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>🔑</span>
+            <h3 className={styles.featureTitle}>Bring Your Own Key (BYOK)</h3>
+            <p className={styles.featureDesc}>
+              Use your own Gemini, OpenAI, or Groq API keys or server-pooled keys seamlessly without rate limits.
+            </p>
+          </div>
+
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>⚡</span>
+            <h3 className={styles.featureTitle}>Zero-Cost Response Cache</h3>
+            <p className={styles.featureDesc}>
+              Identical backlogs load instantly from browser cache with 0 API cost and instant load times.
+            </p>
+          </div>
+
+          <div className={styles.featureBox}>
+            <span className={styles.featureIcon}>📱</span>
+            <h3 className={styles.featureTitle}>Firebase & PWA App Install</h3>
+            <p className={styles.featureDesc}>
+              Save prioritized sessions directly to your Google/Email account and install as a native desktop/mobile app.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Bottom Conversion Banner ── */}
+      <section className={styles.bottomCtaSection}>
+        <h2 style={{ fontSize: '2.2rem', fontWeight: '800', marginBottom: '16px', color: '#1A1613' }}>
+          Ready to Build Better Roadmaps?
+        </h2>
+        <p style={{ color: '#524941', fontSize: '1.1rem', fontWeight: '600', marginBottom: '32px' }}>
+          Join product managers shipping higher-impact features with AI speed.
+        </p>
+        <Link href="/analyze" className={styles.primaryCta}>
+          ⚡ Start Free Analysis Workspace →
+        </Link>
+      </section>
     </div>
   );
 }
-
-// ─── Static data (module-level, not re-created on render) ────────────────────
-const HOW_IT_WORKS_STEPS = [
-  { icon: '✏️', title: 'Input Features',  desc: 'Add your feature ideas with names, descriptions, and categories.' },
-  { icon: '🤖', title: 'AI Scores Them',  desc: 'NVIDIA AI analyzes each feature and calculates RICE scores with reasoning.' },
-  { icon: '🗺️', title: 'Get Your Roadmap', desc: 'Receive a priority-ranked roadmap grouped into Now, Next, and Later sprints.' },
-];
-
-const RICE_LEGEND = [
-  { label: 'R', name: 'Reach',      desc: 'Users impacted / quarter' },
-  { label: 'I', name: 'Impact',     desc: 'Metric movement (1–10)' },
-  { label: 'C', name: 'Confidence', desc: 'Estimate certainty %' },
-  { label: 'E', name: 'Effort',     desc: 'Person-months to build' },
-];

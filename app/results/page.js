@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import AuthModal from '@/app/components/AuthModal';
 import { groupBySprint, getScoreColor } from '@/lib/scoring';
 import styles from './page.module.css';
 
@@ -37,17 +39,21 @@ const buildStats = (data, groups) => [
   { label: 'NEXT',           val: groups.NEXT.length,             color: '#f59e0b'               },
   { label: 'LATER',          val: groups.LATER.length,            color: '#78716c'               },
   { label: 'Top RICE',       val: data.features[0]?.rice_score,   color: 'var(--primary)'       },
-  { label: 'AI Model',       val: 'Llama 3.3 70B',                color: 'var(--primary-light)' },
+  { label: 'AI Source',      val: data.isCached ? '⚡ Cached (0 Cost)' : (data.model || 'Multi-Provider AI'), color: data.isCached ? '#38bdf8' : 'var(--primary-light)' },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Results() {
   const router = useRouter();
+  const { user, saveSessionToHistory } = useAuth();
 
   const [data, setData]           = useState(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const chartRef                  = useRef(null);
   const chartInstance             = useRef(null);
+
 
   // ─── Load results from sessionStorage on mount ───────────────────────────
   useEffect(() => {
@@ -169,6 +175,22 @@ export default function Results() {
     URL.revokeObjectURL(url);
   }
 
+  // ─── Save session to history ─────────────────────────────────────────────
+  async function handleSaveToHistory() {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setSaveStatus('saving');
+    try {
+      await saveSessionToHistory(data);
+      setSaveStatus('saved');
+    } catch (err) {
+      console.error('Failed to save session:', err);
+      setSaveStatus('error');
+    }
+  }
+
   // ─── Loading fallback (before sessionStorage resolves) ──────────────────
   if (!data) {
     return (
@@ -188,6 +210,12 @@ export default function Results() {
     <div className={styles.page}>
       <div className="bg-pattern" />
 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => handleSaveToHistory()}
+      />
+
       {/* ── Navbar ── */}
       <nav className="navbar">
         <div className={styles.logo}>
@@ -195,13 +223,29 @@ export default function Results() {
           <span className={styles.logoText}>PriorityAI</span>
         </div>
         <div className={styles.breadcrumb}>
-          <a href="/" className={styles.breadcrumbLink}>← New Session</a>
+          <a href="/" className={styles.breadcrumbLink}>Home</a>
+          <span className={styles.breadcrumbSep}>/</span>
+          <a href="/analyze" className={styles.breadcrumbLink}>Workspace</a>
+          <span className={styles.breadcrumbSep}>/</span>
+          <a href="/history" className={styles.breadcrumbLink}>My History</a>
           <span className={styles.breadcrumbSep}>/</span>
           <span className={styles.breadcrumbCurrent}>
             Results · {data.features.length} features analyzed
           </span>
         </div>
-        <button onClick={exportCSV} className="btn-ghost">⬇ CSV</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            onClick={handleSaveToHistory}
+            className="btn-primary"
+            style={{ padding: '6px 14px', fontSize: '13px' }}
+            disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+          >
+            {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : '💾 Save History'}
+          </button>
+          <button onClick={exportCSV} className="btn-ghost" style={{ padding: '6px 14px', fontSize: '13px' }}>
+            ⬇ CSV
+          </button>
+        </div>
       </nav>
 
       {/* ── Stats bar ── */}

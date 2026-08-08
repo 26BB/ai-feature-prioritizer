@@ -1,44 +1,47 @@
-/* ========== DESIGN TOKENS — Warm Obsidian + Amber Gold ========== */
-/* ponytail: all color decisions live here; JS hardcodes reference getSprintColor() in scoring.js */
+/* ========== DESIGN TOKENS — Retro Vintage Paperback & Terracotta Yellow Palette ========== */
 :root {
-  /* Backgrounds */
-  --bg-base: #0f0d0a;
-  --bg-surface: rgba(26, 23, 16, 0.82);
-  --bg-surface-solid: #1a1710;
-  --bg-elevated: rgba(36, 32, 22, 0.92);
+  /* Backgrounds — Warm Vanilla Cream Paper Base */
+  --bg-base: #F4ECE1;
+  --bg-surface: rgba(250, 244, 236, 0.95);
+  --bg-surface-solid: #FAF4EC;
+  --bg-elevated: #FFFDF9;
+  --bg-yellow: #FFDE59;         /* Mustard Yellow banner accent */
+  --bg-orange: #F26725;         /* Terracotta Orange action accent */
 
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-glow: rgba(245, 158, 11, 0.35);
-  --border-glow-emerald: rgba(16, 185, 129, 0.25);
+  /* Borders — Retro Ink Hairline & Neo-Brutalist Outlines */
+  --border-subtle: #D8CCC0;
+  --border-bold: #1A1613;
+  --border-glow: rgba(242, 103, 37, 0.4);
+  --border-glow-emerald: rgba(16, 185, 129, 0.3);
 
   /* Brand Colors */
-  --primary: #f59e0b;           /* amber gold */
-  --primary-light: #fbbf24;     /* lighter amber */
-  --primary-dim: rgba(245, 158, 11, 0.12);
-  --secondary: #10b981;         /* emerald */
-  --secondary-dim: rgba(16, 185, 129, 0.10);
-  --accent: #f97316;            /* orange — used for highlights */
-  --danger: #f43f5e;            /* rose */
-  --danger-dim: rgba(244, 63, 94, 0.10);
-  --warning: #fb923c;
+  --primary: #F26725;           /* Terracotta Orange */
+  --primary-light: #FF7E42;     /* Lighter Terracotta */
+  --primary-dim: rgba(242, 103, 37, 0.12);
+  --secondary: #FFDE59;         /* Bright Mustard Yellow */
+  --secondary-dim: rgba(255, 222, 89, 0.25);
+  --accent: #E85D26;            /* Deep Orange */
+  --danger: #E53E3E;
+  --danger-dim: rgba(229, 62, 62, 0.1);
+  --warning: #DD6B20;
 
-  /* Text */
-  --text-primary: #faf7f0;      /* warm white */
-  --text-secondary: #b5b0a3;    /* warm gray */
-  --text-muted: #6b6559;        /* warm muted */
+  /* Text — Deep Vintage Ink */
+  --text-primary: #1A1613;      /* Deep Ink Black */
+  --text-secondary: #524941;    /* Warm Charcoal Ink */
+  --text-muted: #807469;        /* Muted Paper Ink */
 
-  /* Gradients — warm, NOT neon */
-  --gradient-primary: linear-gradient(135deg, #f59e0b, #f97316);
-  --gradient-hero: linear-gradient(135deg, #f59e0b 0%, #fb923c 50%, #10b981 100%);
-  --gradient-card: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(16,185,129,0.03));
-  --gradient-now: linear-gradient(135deg, #10b981, #059669);
-  --gradient-next: linear-gradient(135deg, #f59e0b, #f97316);
-  --gradient-later: linear-gradient(135deg, #78716c, #57534e);
+  /* Gradients — Retro Terracotta to Mustard Shimmer */
+  --gradient-primary: linear-gradient(135deg, #F26725, #FFDE59);
+  --gradient-hero: linear-gradient(135deg, #F26725 0%, #FFDE59 50%, #10B981 100%);
+  --gradient-card: linear-gradient(135deg, rgba(255,222,89,0.15), rgba(242,103,37,0.08));
+  --gradient-now: linear-gradient(135deg, #10B981, #059669);
+  --gradient-next: linear-gradient(135deg, #F26725, #FFDE59);
+  --gradient-later: linear-gradient(135deg, #807469, #524941);
 
-  /* Fonts */
-  --font-headline: var(--font-sora), 'Sora', sans-serif;
-  --font-body: var(--font-inter), 'Inter', sans-serif;
+  /* Vintage Fonts */
+  --font-headline: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --font-mono: var(--font-mono), 'Space Mono', 'Courier New', monospace;
+  --font-body: var(--font-body-sans), 'Plus Jakarta Sans', sans-serif;
 
   /* Spacing */
   --space-xs: 4px;
@@ -52,15 +55,15 @@
   /* Radius */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
-  /* Shadows — warm toned, no electric glow */
-  --shadow-glow-primary: 0 0 24px rgba(245, 158, 11, 0.20);
-  --shadow-glow-emerald: 0 0 24px rgba(16, 185, 129, 0.18);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5);
-  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.65);
+  /* Shadows — Neo-Brutalist & Hard Retro Offsets */
+  --shadow-retro: 4px 4px 0px #1A1613;
+  --shadow-retro-hover: 6px 6px 0px #1A1613;
+  --shadow-card: 0 4px 18px rgba(26, 22, 19, 0.08);
+  --shadow-elevated: 0 8px 30px rgba(26, 22, 19, 0.12);
 }
 
 /* ========== RESET ========== */
@@ -84,160 +87,175 @@ body {
 
 h1, h2, h3, h4, h5 {
   font-family: var(--font-headline);
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: 800;
+  line-height: 1.15;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
-/* ========== BACKGROUND PATTERN — warm amber orbs, no blue/violet ========== */
+/* Subtitles & Taglines in Italic Editorial Style */
+.hero-tagline, .section-tagline {
+  font-family: var(--font-headline);
+  font-style: italic;
+}
+
+/* ========== RETRO PAPER BACKDROP PATTERN ========== */
 .bg-pattern {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(ellipse 700px 450px at 8% 15%, rgba(245, 158, 11, 0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 300px at 88% 75%, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 300px 200px at 50% 50%, rgba(249, 115, 22, 0.03) 0%, transparent 70%),
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 52px 52px, 52px 52px;
+    radial-gradient(ellipse 700px 450px at 10% 10%, rgba(255, 222, 89, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 90% 80%, rgba(242, 103, 37, 0.12) 0%, transparent 70%),
+    linear-gradient(rgba(26, 22, 19, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 22, 19, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
 }
 
-/* ========== GLASS CARDS — warm tinted ========== */
+/* ========== GLASS & RETRO CARDS ========== */
 .glass-card {
   background: var(--bg-surface);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border-subtle);
+  border: 2px solid var(--border-bold);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-retro);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-retro-hover);
 }
 
 .glass-card-elevated {
   background: var(--bg-elevated);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
+  border: 2px solid var(--border-bold);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-elevated);
+  box-shadow: var(--shadow-retro);
 }
 
-/* ========== BUTTONS ========== */
+/* ========== RETRO BUTTONS ========== */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
   padding: 12px 24px;
   background: var(--primary);
-  color: #0f0d0a;               /* dark text on amber for contrast */
-  font-family: var(--font-body);
+  color: #FFFDF9;
+  font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 15px;
-  border: none;
+  font-size: 14px;
+  border: 2px solid var(--border-bold);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   text-decoration: none;
-  box-shadow: var(--shadow-glow-primary);
-  letter-spacing: 0.01em;
+  box-shadow: 3px 3px 0px #1A1613;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
+  transform: translate(-2px, -2px);
   background: var(--primary-light);
-  box-shadow: 0 0 32px rgba(245, 158, 11, 0.35), 0 4px 16px rgba(0,0,0,0.4);
+  box-shadow: 5px 5px 0px #1A1613;
 }
 
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px #1A1613;
+}
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
   padding: 10px 20px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-solid);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  border: 2px solid var(--border-bold);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   text-decoration: none;
+  box-shadow: 2px 2px 0px #1A1613;
 }
 
 .btn-ghost:hover {
-  border-color: var(--primary);
-  color: var(--primary-light);
-  background: var(--primary-dim);
+  background: var(--secondary);
+  color: #1A1613;
+  box-shadow: 4px 4px 0px #1A1613;
+  transform: translate(-1px, -1px);
 }
 
 /* ========== SPRINT BADGES ========== */
 .badge-now {
-  background: rgba(16, 185, 129, 0.13);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.28);
-  padding: 3px 10px;
+  background: #10B981;
+  color: #FFFDF9;
+  border: 1.5px solid var(--border-bold);
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .badge-next {
-  background: rgba(245, 158, 11, 0.13);
-  color: var(--primary-light);
-  border: 1px solid rgba(245, 158, 11, 0.28);
-  padding: 3px 10px;
+  background: var(--secondary);
+  color: #1A1613;
+  border: 1.5px solid var(--border-bold);
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .badge-later {
-  background: rgba(120, 113, 108, 0.13);
-  color: #a8a29e;
-  border: 1px solid rgba(120, 113, 108, 0.25);
-  padding: 3px 10px;
+  background: #E2D7C7;
+  color: #524941;
+  border: 1.5px solid var(--border-bold);
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 /* ========== INPUTS ========== */
 .input-field {
   width: 100%;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid var(--border-subtle);
+  background: #FFFDF9;
+  border: 2px solid var(--border-bold);
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 14px;
+  font-weight: 500;
   padding: 10px 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
+  box-shadow: 2px 2px 0px rgba(26, 22, 19, 0.15);
 }
 
 .input-field::placeholder { color: var(--text-muted); }
 
 .input-field:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-dim);
+  box-shadow: 3px 3px 0px var(--border-bold);
 }
 
 .input-field option {
-  background: #1a1710;
+  background: #FFFDF9;
   color: var(--text-primary);
 }
 
-/* ========== NAVBAR ========== */
+/* ========== RETRO NAVBAR ========== */
 .navbar {
   position: sticky;
   top: 0;
@@ -246,38 +264,60 @@ h1, h2, h3, h4, h5 {
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-xl);
-  height: 64px;
-  background: rgba(15, 13, 10, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-subtle);
+  height: 68px;
+  background: #FAF4EC;
+  border-bottom: 2.5px solid var(--border-bold);
+  box-shadow: 0 4px 12px rgba(26, 22, 19, 0.05);
 }
 
-/* ========== ANIMATIONS ========== */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ========== WORD MOTION ANIMATIONS ========== */
+
+@keyframes wordGradientShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.25); }
-  50%       { box-shadow: 0 0 36px rgba(245, 158, 11, 0.50); }
+.animated-word-shimmer {
+  background: linear-gradient(90deg, #F26725, #FFDE59, #E85D26, #F26725);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: wordGradientShimmer 4s ease infinite;
+  display: inline-block;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+@keyframes wordFloatWave {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
 }
 
-.animate-fade-in               { animation: fadeInUp 0.45s ease forwards; }
-.animate-fade-in-delay-1       { animation: fadeInUp 0.45s ease 0.08s  forwards; opacity: 0; }
-.animate-fade-in-delay-2       { animation: fadeInUp 0.45s ease 0.16s  forwards; opacity: 0; }
-.animate-fade-in-delay-3       { animation: fadeInUp 0.45s ease 0.24s  forwards; opacity: 0; }
+.word-float {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
 
-/* ========== SCORE NUMBER — amber gold ========== */
+.word-float:hover {
+  animation: wordFloatWave 1s ease-in-out infinite;
+  color: var(--primary);
+}
+
+@keyframes typewriterPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typewriter-cursor::after {
+  content: '▋';
+  color: var(--primary);
+  margin-left: 4px;
+  animation: typewriterPulse 0.8s infinite;
+}
+
+/* ========== SCORE NUMBER ========== */
 .score-number {
-  font-family: var(--font-headline);
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-weight: 700;
   font-size: 2.5rem;
   line-height: 1;
   color: var(--primary);
@@ -296,8 +336,9 @@ h1, h2, h3, h4, h5 {
   padding: 2px 8px;
   background: var(--danger-dim);
   color: var(--danger);
-  border: 1px solid rgba(244, 63, 94, 0.18);
+  border: 1px solid var(--danger);
   border-radius: var(--radius-full);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }

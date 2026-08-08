@@ -1,0 +1,142 @@
+'use client';
+import { useState, useEffect } from 'react';
+import styles from './ApiKeyModal.module.css';
+
+export default function ApiKeyModal({ isOpen, onClose }) {
+  const [provider, setProvider] = useState('auto');
+  const [apiKey, setApiKey] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [cacheCount, setCacheCount] = useState(0);
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedProvider = localStorage.getItem('priority_byok_provider') || 'auto';
+      const storedKey = localStorage.getItem('priority_byok_key') || '';
+      setProvider(storedProvider);
+      setApiKey(storedKey);
+
+      // Count cached items
+      updateCacheCount();
+    }
+  }, [isOpen]);
+
+  function updateCacheCount() {
+    let count = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith('rice_cache_')) {
+        count++;
+      }
+    }
+    setCacheCount(count);
+  }
+
+  function handleSave() {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('priority_byok_provider', provider);
+      localStorage.setItem('priority_byok_key', apiKey.trim());
+      setSavedSuccess(true);
+      setTimeout(() => {
+        setSavedSuccess(false);
+        onClose();
+      }, 600);
+    }
+  }
+
+  function handleClearCache() {
+    if (typeof window !== 'undefined') {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('rice_cache_')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+      updateCacheCount();
+    }
+  }
+
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.backdrop} onClick={onClose}>
+      <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
+          <h3>⚙️ Settings & BYOK (Bring Your Own Key)</h3>
+          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+        </div>
+
+        <div className={styles.body}>
+          <p className={styles.hint}>
+            Avoid API rate limits by configuring your own provider key or using server defaults.
+          </p>
+
+          <div className={styles.fieldGroup}>
+            <label>AI Provider</label>
+            <select
+              value={provider}
+              onChange={(e) => setProvider(e.target.value)}
+              className={styles.selectInput}
+            >
+              <option value="auto">Auto (Server Default / Pooled)</option>
+              <option value="gemini">Google Gemini API (Generous Free Tier)</option>
+              <option value="openai">OpenAI (gpt-4o-mini)</option>
+              <option value="groq">Groq (Ultra-fast Llama 3.3)</option>
+              <option value="nvidia">NVIDIA NIM (Llama 3.3 70B)</option>
+            </select>
+          </div>
+
+          {provider !== 'auto' && (
+            <div className={styles.fieldGroup}>
+              <label>API Key for {provider.toUpperCase()}</label>
+              <div className={styles.keyInputWrapper}>
+                <input
+                  type={showKey ? 'text' : 'password'}
+                  placeholder={`Paste your ${provider.toUpperCase()} key...`}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className={styles.textInput}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey(!showKey)}
+                  className={styles.toggleShowBtn}
+                >
+                  {showKey ? '🙈' : '👁️'}
+                </button>
+              </div>
+              <span className={styles.subtext}>
+                Keys are stored locally in your browser and never saved on our server.
+              </span>
+            </div>
+          )}
+
+          <hr className={styles.divider} />
+
+          <div className={styles.cacheSection}>
+            <div className={styles.cacheInfo}>
+              <span>⚡ Client-Side Response Cache</span>
+              <strong>{cacheCount} items cached</strong>
+            </div>
+            <button
+              type="button"
+              onClick={handleClearCache}
+              disabled={cacheCount === 0}
+              className={styles.clearCacheBtn}
+            >
+              Clear Cache
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.footer}>
+          {savedSuccess && <span className={styles.savedBadge}>✅ Saved!</span>}
+          <button className={styles.saveBtn} onClick={handleSave}>
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
