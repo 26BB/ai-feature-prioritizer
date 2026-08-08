@@ -1,127 +1,97 @@
-# PriorityAI — Micro-SaaS AI Feature Prioritization Dashboard & PWA
+# PriorityAI — AI Feature Prioritization Dashboard & App 🚀
 
-> Input your product feature ideas. Get RICE scores, effort vs. impact matrices, and sprint roadmaps — powered by Multi-Provider AI (NVIDIA, Gemini, Groq, OpenAI) with zero downtime fallback.
+> **The easiest AI tool for Product Managers and Founders to rank feature ideas in 5 seconds.** 
+> Get RICE scores, effort vs. impact charts, and sprint roadmaps automatically — zero coding required!
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel)](https://01-feature-prioritizer.vercel.app)
-![Powered by Multi-AI](https://img.shields.io/badge/Powered%20by-NVIDIA%20%7C%20Gemini%20%7C%20Groq-76b900?style=for-the-badge)
-![Next.js 16](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
-![PWA Ready](https://img.shields.io/badge/PWA-Installable%20App-5B21B6?style=for-the-badge)
-![Firebase Auth](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-FFCA28?style=for-the-badge&logo=firebase)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Click%20To%20Open-000000?style=for-the-badge&logo=vercel)](https://01-feature-prioritizer.vercel.app)
+![Easy Setup](https://img.shields.io/badge/Beginner%20Friendly-100%25-brightgreen?style=for-the-badge)
+![PWA Ready](https://img.shields.io/badge/Installable%20App-Android%20%7C%20iOS%20%7C%20PC-5B21B6?style=for-the-badge)
+![No Code Required](https://img.shields.io/badge/No%20Coding%20Needed-Zero%20Tech%20Jargon-FFCA28?style=for-the-badge)
 
-🌐 **Live App:** [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app)
-
----
-
-## ✨ What's New in v2.0 (Micro-SaaS Upgrade)
-
-PriorityAI has evolved from a standalone portfolio tool into a full-featured, installable **Micro-SaaS Application** tailored for Growth Product Managers, Founders, and Engineering Leads.
-
-### 🌟 Key Features
-- 🏠 **SaaS Landing Home Page (`/`):** High-converting landing page with live interactive preview teasers, metrics, and feature showcases.
-- ⚡ **Prioritizer Workspace (`/analyze`):** Dedicated workspace form for entering feature backlogs and running AI RICE prioritization.
-- 🔒 **Firebase User Authentication:** 1-Click **Google Sign-In** and **Email/Password** registration with user profiles.
-- 💾 **Personal Saved History (`/history`):** Save prioritization boards to your account, re-open previous sessions with 1 click, or export to CSV.
-- 🔑 **Bring Your Own Key (BYOK):** Use your own Gemini, OpenAI, Groq, or NVIDIA API keys securely stored in browser `localStorage`.
-- ⚡ **Zero-Cost Client Caching:** Hashes feature inputs to return instant cached scorecards without spending API credits.
-- 🛡️ **Multi-Provider Auto-Failover:** Sequence: BYOK Key → NVIDIA NIM → Google Gemini → Groq → **Deterministic Math Engine** for 100% uptime.
-- 📱 **Installable PWA App:** 1-Click **"📱 Install App"** banner for Android, iOS, Mac, and Windows home screens.
-- 🎨 **Retro Vintage Paperback Theme:** Warm vanilla cream paper palette, Terracotta Orange action accents, `Playfair Display` serif headlines, `Space Mono` typewriter scores, and kinetic word motion animations.
+🌐 **Try Live in Your Browser:** [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app)
 
 ---
 
-## 🧮 RICE Framework
+## 📸 Visual Tour & Screenshots
 
-$$\text{RICE Score} = \frac{\text{Reach} \times \text{Impact} \times \text{Confidence}}{\text{Effort}}$$
+### 🎯 1. SaaS Landing Home Page & Feature Input
+Enter your feature names, quick descriptions, and categories.
+![Feature Input Interface](docs/screenshots/home_input.png)
 
-| Component | Scale | Meaning |
-| :--- | :--- | :--- |
-| **Reach** | 1–10 | Users impacted per quarter |
-| **Impact** | 1–10 | How significantly it moves key metrics |
-| **Confidence** | 10–100% | Certainty in estimates |
-| **Effort** | 1–10 | Person-months required to build |
+### 🃏 2. AI RICE Score Cards
+AI scores each feature on Reach, Impact, Confidence, and Effort, explaining *why* it got that score.
+![RICE Score Cards](docs/screenshots/score_cards.png)
 
-### Sprint Assignment Logic:
-- **NOW:** RICE > 500 AND Effort ≤ 5
-- **NEXT:** RICE 200–500 OR Effort 5–7
-- **LATER:** RICE < 200 OR Effort > 7
+### 📊 3. Interactive Effort vs. Impact 2×2 Matrix
+A visual bubble plot that shows you immediately which features give maximum result for minimum effort.
+![Effort vs Impact Matrix](docs/screenshots/matrix_chart.png)
 
----
-
-## 🛠️ Tech Stack
-
-| Layer | Choice | Description |
-| :--- | :--- | :--- |
-| **Framework** | Next.js 16 (App Router + Turbopack) | Fast SSR & API routes in a unified codebase |
-| **Styling** | Vanilla CSS + CSS Modules | Custom Retro Paperback Design System & word animations |
-| **Typography** | Google Fonts (`Playfair Display`, `Space Mono`, `Plus Jakarta Sans`) | Editorial vintage book title serifs + typewriter monospaced metrics |
-| **AI Engine** | NVIDIA NIM, Google Gemini, Groq, OpenAI | Multi-LLM failover & BYOK support |
-| **Backend & Auth** | Firebase Auth & Firestore DB | User accounts (Google/Email) & saved history persistence |
-| **Mobile & PWA** | Web App Manifest + Service Worker hooks | Installable native app experience across platforms |
-| **Charts & Export** | Chart.js & Native Blob API | 2x2 Effort vs Impact bubble matrix & CSV downloads |
+### 🗺️ 4. NOW / NEXT / LATER Sprint Roadmap
+Features are automatically organized into sprint lanes (`NOW`, `NEXT`, and `LATER`) ready to share with your team.
+![Sprint Roadmap](docs/screenshots/sprint_roadmap.png)
 
 ---
 
-## 📂 Project Structure
+## 🌟 What This Tool Does For You (In Simple Words)
 
-```
-01-feature-prioritizer/
-├── app/
-│   ├── page.js                  # SaaS Landing Home Page
-│   ├── landing.module.css       # Retro landing page styling
-│   ├── analyze/
-│   │   └── page.js              # Prioritizer Workspace tool
-│   ├── history/
-│   │   ├── page.js              # My History saved sessions dashboard
-│   │   └── page.module.css      # History page styling
-│   ├── results/
-│   │   └── page.js              # Results: Score Cards, 2x2 Matrix, Roadmap
-│   ├── components/
-│   │   ├── ApiKeyModal.js       # BYOK Settings & Cache management modal
-│   │   ├── AuthModal.js         # Firebase Login & Sign Up modal
-│   │   └── PwaInstallPrompt.js  # Floating 1-click PWA app install banner
-│   ├── api/
-│   │   └── prioritize/
-│   │       └── route.js         # POST API route handling multi-provider AI
-│   ├── globals.css              # Design tokens (Retro Vanilla Cream & Terracotta)
-│   └── layout.js                # Root layout with AuthProvider & PWA manifest
-├── context/
-│   └── AuthContext.js           # Firebase Auth & Firestore state management
-├── lib/
-│   ├── firebase.js              # Firebase initialization with mock fallback
-│   ├── llmProviders.js          # Multi-LLM failover & deterministic math engine
-│   ├── prompts.js               # Structured RICE prompt builder
-│   └── scoring.js              # Sprint grouping & color utilities
-├── public/
-│   ├── manifest.json            # Web App Manifest for PWA installation
-│   └── icons/                   # Vector app icons (192x192, 512x512)
-└── DESIGN.md                    # Semantic Retro Vintage Design System specification
+- ⚡ **Calculates RICE Scores Automatically:** No spreadsheets or manual math needed.
+- 🔒 **Save Your Work:** Sign in with Google or Email to save past prioritizations.
+- 📱 **Install on Phone or PC:** Click **"📱 Install App"** to add it to your home screen like a native phone app.
+- 🔑 **Bring Your Own Key (BYOK):** Use your own free Google Gemini key or use server-provided AI.
+- ⬇️ **1-Click Export:** Download your prioritized roadmap as a CSV file to paste into Notion or Excel.
+
+---
+
+## 🐣 Beginner's 3-Step Installation Guide (No Tech Knowledge Needed!)
+
+Want to run this app locally on your own computer? Follow these 3 simple steps:
+
+### Step 1: Install Node.js (If you don't have it)
+Download and install the free **Node.js** installer from [nodejs.org](https://nodejs.org). Just click "Next" through the installer.
+
+### Step 2: Open your Terminal / Command Prompt and Run 3 Commands
+Open **Command Prompt** (on Windows) or **Terminal** (on Mac), paste these 3 lines one by one, and press **Enter**:
+
+```bash
+# 1. Download the project files
+git clone https://github.com/26BB/ai-feature-prioritizer.git
+
+# 2. Go into the project folder
+cd ai-feature-prioritizer
+
+# 3. Install the app packages
+npm install
 ```
 
+### Step 3: Start the App!
+Run this final command:
+
+```bash
+npm run dev
+```
+
+🎉 **That's it!** Now open your internet browser (Chrome, Edge, or Safari) and go to:
+👉 **`http://localhost:3000`**
+
 ---
 
-## 💻 Local Development Setup
+## 📱 How to Install as an App on Your Mobile Phone or Laptop
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/26BB/ai-feature-prioritizer.git
-   cd ai-feature-prioritizer
-   ```
+1. Open [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app) in Google Chrome or Edge.
+2. Look for the floating **"📱 Install App"** banner at the bottom.
+3. Click **Install**. The app will now sit on your home screen or desktop like a regular app!
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+---
 
-3. **Run local dev server:**
-   ```bash
-   npm run dev
-   ```
+## 🔑 How to Get a Free AI Key (BYOK)
 
-4. **Open in browser:**
-   Navigate to `http://localhost:3000`.
+1. Click **⚙️ Settings & BYOK** in the app menu.
+2. Choose **Google Gemini**.
+3. Get a free key from [Google AI Studio](https://aistudio.google.com) and paste it into the settings box.
+4. Click **Save Preferences**!
 
 ---
 
 ## 📄 License
 
-MIT © [Bhushan Bhosale](https://github.com/26BB)
+Free & Open Source under the MIT License © [Bhushan Bhosale](https://github.com/26BB)
