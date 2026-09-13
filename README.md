@@ -1,101 +1,101 @@
-# PriorityAI — AI Feature Prioritization Dashboard & App 🚀
+# 🚀 PriorityAI — AI Feature Prioritization Dashboard & Platform
 
-> **The easiest AI tool for Product Managers and Founders to rank feature ideas in 5 seconds.** 
-> Get RICE scores, effort vs. impact charts, and sprint roadmaps automatically — zero coding required!
+### Production Full-Stack AI Application for Product Managers & Founders
+> **Built by Bhushan Bhosale** (Founder's Office & Product Management | Pune, India)  
+> 🌐 **Live Web Application:** [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app)  
+> 📚 **Complete Documentation Suite:** [`/docs` Directory](./docs)
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Click%20To%20Open-000000?style=for-the-badge&logo=vercel)](https://01-feature-prioritizer.vercel.app)
-![Easy Setup](https://img.shields.io/badge/Beginner%20Friendly-100%25-brightgreen?style=for-the-badge)
-![PWA Ready](https://img.shields.io/badge/Installable%20App-Android%20%7C%20iOS%20%7C%20PC-5B21B6?style=for-the-badge)
-![No Code Required](https://img.shields.io/badge/No%20Coding%20Needed-Zero%20Tech%20Jargon-FFCA28?style=for-the-badge)
-
-🌐 **Try Live in Your Browser:** [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app)
-
----
-
-## 📸 Visual Tour & Screenshots (Retro Vintage Paperback Edition)
-
-### 🎯 1. SaaS Landing Home Page
-High-converting home page with live RICE scorecard teasers and feature grid.
-![SaaS Landing Home Page](docs/screenshots/retro_home.png)
-
-### ⚡ 2. Prioritizer Workspace (`/analyze`)
-Enter feature names, descriptions, and categories to run AI RICE scoring.
-![Prioritizer Workspace](docs/screenshots/retro_workspace.png)
-
-### 🃏 3. AI RICE Score Cards & Results
-Multi-provider AI scores each feature on Reach, Impact, Confidence, and Effort with LLM reasoning.
-![RICE Score Cards](docs/screenshots/retro_scorecards_v4.png)
-
-### 📊 4. Interactive Effort vs. Impact 2×2 Matrix
-Visual Effort vs Impact bubble plot categorizing features across high-impact quadrants instantly.
-![Effort vs Impact Matrix](docs/screenshots/retro_matrix_v4.png)
-
-### 🗺️ 5. NOW / NEXT / LATER Sprint Roadmap
-Organized sprint swim lanes ready for 1-click export to Jira, Linear, or Notion.
-![Sprint Roadmap](docs/screenshots/retro_roadmap_v4.png)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://01-feature-prioritizer.vercel.app)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14.0-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Neon Database](https://img.shields.io/badge/Database-Neon_Serverless_Postgres-00E5FF?style=for-the-badge&logo=postgresql&logoColor=black)](./docs/ARCHITECTURE.md)
+[![Firebase Auth](https://img.shields.io/badge/Auth-Firebase_Security-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](./docs/ARCHITECTURE.md)
+[![NVIDIA NIM AI](https://img.shields.io/badge/AI_Engine-NVIDIA_NIM_Llama_3.3-76B900?style=for-the-badge&logo=nvidia&logoColor=black)](./docs/PRD.md)
+[![Recruiter Friendly](https://img.shields.io/badge/Documentation-100%25_Non--Tech_Friendly-10B981?style=for-the-badge)](./docs)
 
 ---
 
-## 🌟 What This Tool Does For You (In Simple Words)
+## 💡 Executive Summary (Plain English — For HR & Non-Technical Readers)
 
-- ⚡ **Calculates RICE Scores Automatically:** No spreadsheets or manual math needed.
-- 🔒 **Save Your Work:** Sign in with Google or Email to save past prioritizations.
-- 📱 **Install on Phone or PC:** Click **"📱 Install App"** to add it to your home screen like a native phone app.
-- 🔑 **Bring Your Own Key (BYOK):** Use your own free Google Gemini key or server-provided AI.
-- ⬇️ **1-Click Export:** Download your prioritized roadmap as a CSV file.
+### **What is PriorityAI?**
+**PriorityAI** is an intelligent web app that helps Product Managers, Startup Founders, and Team Leaders rank their feature ideas in **under 5 seconds**. Instead of spending hours calculating numbers in complicated Excel spreadsheets, users simply type in their feature ideas, and artificial intelligence calculates objective scores automatically.
+
+### **What Real-World Business Problem Does It Solve?**
+* **Stops Wasting 5+ Hours Every Week on Manual Math:** Product Managers usually waste hours every sprint cycle filling out RICE spreadsheets (Reach, Impact, Confidence, Effort) to decide what engineers should build next.
+* **Eliminates Unbiased Feature Arguments:** Engineers and sales teams often argue about which features are most important. PriorityAI uses AI reasoning to provide objective scorecards so teams align instantly.
+* **Organizes Sprint Roadmaps Automatically:** Features are automatically categorized into **NOW (Quick Wins)**, **NEXT (Major Projects)**, and **LATER** swimlanes ready for 1-click export.
 
 ---
 
-## 🐣 Beginner's 3-Step Installation Guide (No Tech Knowledge Needed!)
+## 📸 Visual Tour & Features
 
-Want to run this app locally on your own computer? Follow these 3 simple steps:
+1. **Prioritizer Workspace (`/analyze`):** Type feature descriptions and select categories.
+2. **AI RICE Scorecards:** Automated scores for Reach, Impact, Confidence, and Effort with plain-English AI reasoning.
+3. **Interactive 2×2 Effort vs Impact Matrix:** Visual quadrant plot mapping features into Quick Wins vs Major Projects.
+4. **NOW / NEXT / LATER Swimlanes:** Sprint-ready roadmaps with 1-click CSV export.
 
-### Step 1: Install Node.js (If you don't have it)
-Download and install the free **Node.js** installer from [nodejs.org](https://nodejs.org). Just click "Next" through the installer.
+---
 
-### Step 2: Open your Terminal / Command Prompt and Run 3 Commands
-Open **Command Prompt** (on Windows) or **Terminal** (on Mac), paste these 3 lines one by one, and press **Enter**:
+## 🏛️ Full-Stack System Architecture (Explained Simply)
+
+PriorityAI is built on a modern 3-Tier full-stack cloud architecture:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                               PRIORITYAI FULL-STACK                                     │
+│                                                                                         │
+│   ┌───────────────────────────┐  ┌───────────────────────────┐  ┌────────────────────┐   │
+│   │   USER SECURITY & AUTH    │  │    CLOUD POSTGRES DB      │  │  NEXT.JS FRONTEND  │   │
+│   │      (Firebase Auth)      │  │ (Neon Serverless Postgres)│  │  (Next.js App)     │   │
+│   │                           │  │                           │  │                    │   │
+│   │ Secure Google Sign-In &   │  │ Stores features, RICE     │  │ Interactive matrix,│   │
+│   │ multi-user workspaces     │  │ scores & roadmap history  │  │ swimlanes & export │   │
+│   └───────────────────────────┘  └───────────────────────────┘  └────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **User Authentication (Firebase Auth):** Manages Google Sign-In and isolates saved feature roadmaps by user account.
+2. **Cloud Database (Neon Serverless Postgres + Drizzle ORM):** Stores feature backlogs, RICE score calculations, and quadrant positioning.
+3. **Frontend Interface (Next.js 14 + Tailwind CSS):** Renders responsive scorecards and 2×2 matrix plots.
+
+👉 *For complete database schemas and technical specs, read [**ARCHITECTURE.md**](./docs/ARCHITECTURE.md).*
+
+---
+
+## 📚 Complete Product & Portfolio Documentation Index
+
+Explore the behind-the-scenes product strategy and engineering specs in the [`/docs`](./docs) folder:
+
+| Document | Focus Area & Description | Direct Link |
+| :--- | :--- | :--- |
+| 📋 **Product Requirements (PRD)** | User personas (Senior PM, Founder), RICE requirements, 2×2 matrix criteria | [PRD.md](./docs/PRD.md) |
+| 🏛️ **System Architecture** | Full-stack Next.js, Drizzle ORM + Neon Postgres ERD, Firebase Auth specs | [ARCHITECTURE.md](./docs/ARCHITECTURE.md) |
+| 🚀 **Go-To-Market Strategy** | Product-Led Growth (PLG) distribution strategy & BYOK freemium model | [GTM-STRATEGY.md](./docs/GTM-STRATEGY.md) |
+| 🔬 **User Research Synthesis** | Insights from interviews with 15 Product Managers & Founders | [USER-RESEARCH.md](./docs/USER-RESEARCH.md) |
+| 🧪 **Quality & Test Report** | Test verification report for RICE calculation engine & Next.js builds | [TEST-REPORT.md](./docs/TEST-REPORT.md) |
+
+---
+
+## 💻 Quickstart (Run Locally)
 
 ```bash
-# 1. Download the project files
+# 1. Clone repository
 git clone https://github.com/26BB/ai-feature-prioritizer.git
-
-# 2. Go into the project folder
 cd ai-feature-prioritizer
 
-# 3. Install the app packages
+# 2. Install packages
 npm install
-```
 
-### Step 3: Start the App!
-Run this final command:
-
-```bash
+# 3. Start local development server
 npm run dev
+# Open http://localhost:3000
 ```
 
-🎉 **That's it!** Now open your internet browser (Chrome, Edge, or Safari) and go to:
-👉 **`http://localhost:3000`**
-
 ---
 
-## 📱 How to Install as an App on Your Mobile Phone or Laptop
+## 👤 Author & Portfolio Context
 
-1. Open [https://01-feature-prioritizer.vercel.app](https://01-feature-prioritizer.vercel.app) in Google Chrome or Edge.
-2. Look for the floating **"📱 Install App"** banner at the bottom.
-3. Click **Install**. The app will now sit on your home screen or desktop like a regular app!
-
----
-
-## 🔑 How to Get a Free AI Key (BYOK)
-
-1. Click **⚙️ Settings & BYOK** in the app menu.
-2. Choose **Google Gemini**.
-3. Get a free key from [Google AI Studio](https://aistudio.google.com) and paste it into the settings box.
-4. Click **Save Preferences**!
-
----
-
-## 📄 License
-
-Free & Open Source under the MIT License © [Bhushan Bhosale](https://github.com/26BB)
+**Bhushan Bhosale**  
+*Role Focus:* Founder's Office / Product Management / Technical Growth  
+*Location:* Pune, Maharashtra, India  
+*LinkedIn:* [Bhushan Bhosale](https://www.linkedin.com/in/bhushan-bhosale-36aa48373/)  
+*GitHub:* [@26BB](https://github.com/26BB)
