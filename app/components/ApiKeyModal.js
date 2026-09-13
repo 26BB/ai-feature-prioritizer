@@ -61,10 +61,22 @@ export default function ApiKeyModal({ isOpen, onClose }) {
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
-      <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modalCard}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+      >
         <div className={styles.header}>
-          <h3>⚙️ Settings & BYOK (Bring Your Own Key)</h3>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <h3 id="settings-modal-title">⚙️ Settings & BYOK (Bring Your Own Key)</h3>
+          <button
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Close settings modal"
+          >
+            ✕
+          </button>
         </div>
 
         <div className={styles.body}>
@@ -102,6 +114,8 @@ export default function ApiKeyModal({ isOpen, onClose }) {
                   type="button"
                   onClick={() => setShowKey(!showKey)}
                   className={styles.toggleShowBtn}
+                  aria-label={showKey ? 'Hide API key' : 'Show API key'}
+                  title={showKey ? 'Hide API key' : 'Show API key'}
                 >
                   {showKey ? '🙈' : '👁️'}
                 </button>
