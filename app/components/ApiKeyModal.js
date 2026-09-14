@@ -10,6 +10,8 @@ export default function ApiKeyModal({ isOpen, onClose }) {
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (typeof window !== 'undefined') {
       const storedProvider = localStorage.getItem('priority_byok_provider') || 'auto';
       const storedKey = localStorage.getItem('priority_byok_key') || '';
@@ -19,7 +21,16 @@ export default function ApiKeyModal({ isOpen, onClose }) {
       // Count cached items
       updateCacheCount();
     }
-  }, [isOpen]);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   function updateCacheCount() {
     let count = 0;
@@ -85,8 +96,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
           </p>
 
           <div className={styles.fieldGroup}>
-            <label>AI Provider</label>
+            <label htmlFor="byok-provider-select">AI Provider</label>
             <select
+              id="byok-provider-select"
               value={provider}
               onChange={(e) => setProvider(e.target.value)}
               className={styles.selectInput}
@@ -101,9 +113,10 @@ export default function ApiKeyModal({ isOpen, onClose }) {
 
           {provider !== 'auto' && (
             <div className={styles.fieldGroup}>
-              <label>API Key for {provider.toUpperCase()}</label>
+              <label htmlFor="byok-api-key">API Key for {provider.toUpperCase()}</label>
               <div className={styles.keyInputWrapper}>
                 <input
+                  id="byok-api-key"
                   type={showKey ? 'text' : 'password'}
                   placeholder={`Paste your ${provider.toUpperCase()} key...`}
                   value={apiKey}
