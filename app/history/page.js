@@ -27,7 +27,7 @@ export default function HistoryPage() {
       }
     }
     loadHistory();
-  }, [user]);
+  }, [user, getUserHistory]);
 
   function handleReopen(session) {
     if (!session || !session.features) return;
@@ -150,7 +150,7 @@ export default function HistoryPage() {
             <div className={styles.emptyIcon}>📋</div>
             <h3 className={styles.emptyTitle}>No History Found</h3>
             <p className={styles.emptySub}>
-              You haven't saved any feature prioritization sessions yet. Run an analysis on the dashboard to save it.
+              You haven&apos;t saved any feature prioritization sessions yet. Run an analysis on the dashboard to save it.
             </p>
             <button onClick={() => router.push('/')} className="btn-primary">
               + Prioritize Features Now

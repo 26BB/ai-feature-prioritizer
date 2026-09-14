@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import styles from '../page.module.css';
@@ -175,9 +176,9 @@ export default function AnalyzePage() {
           <span className={styles.logoText}>PriorityAI</span>
         </div>
         <div className={styles.navLinks}>
-          <a href="/" className={styles.navLink}>Home</a>
-          <a href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</a>
-          <a href="/history" className={styles.navLink}>My History</a>
+          <Link href="/" className={styles.navLink}>Home</Link>
+          <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
+          <Link href="/history" className={styles.navLink}>My History</Link>
           <button onClick={() => setIsModalOpen(true)} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
             ⚙️ Settings & BYOK
           </button>

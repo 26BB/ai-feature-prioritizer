@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
@@ -55,7 +56,7 @@ export default function Results() {
   const chartInstance             = useRef(null);
 
 
-  // ─── Load results from sessionStorage on mount ───────────────────────────
+  // ─── Load results from sessionStorage on mount (ensures SSR hydration safety) ───
   useEffect(() => {
     const raw = sessionStorage.getItem('priorityResults');
     if (!raw) {
@@ -93,7 +94,8 @@ export default function Results() {
 
         return {
           label:           f.name,
-          data:            [{ x: f.effort, y: f.impact, r: bubbleRadius }],
+          // Bolt optimization: attach feature reference on data point for O(1) tooltip lookup
+          data:            [{ x: f.effort, y: f.impact, r: bubbleRadius, feature: f }],
           backgroundColor: colors.bg,
           borderColor:     colors.border,
           borderWidth:     2,
@@ -131,7 +133,8 @@ export default function Results() {
             tooltip: {
               callbacks: {
                 label: (ctx) => {
-                  const f = data.features.find((f) => f.name === ctx.dataset.label);
+                  // Bolt optimization: O(1) direct property access instead of O(N) Array.prototype.find search on hover
+                  const f = ctx.raw?.feature;
                   return f
                     ? [f.name, `RICE: ${f.rice_score}`, `Sprint: ${f.sprint}`]
                     : [];
@@ -191,6 +194,10 @@ export default function Results() {
     }
   }
 
+  // ─── Derived data (Bolt optimization: memoized to prevent recalculation on tab switches / re-renders) ───
+  const groups = useMemo(() => (data ? groupBySprint(data.features) : { NOW: [], NEXT: [], LATER: [] }), [data]);
+  const stats  = useMemo(() => (data ? buildStats(data, groups) : []), [data, groups]);
+
   // ─── Loading fallback (before sessionStorage resolves) ──────────────────
   if (!data) {
     return (
@@ -200,10 +207,6 @@ export default function Results() {
       </div>
     );
   }
-
-  // ─── Derived data (computed once per render) ─────────────────────────────
-  const groups = groupBySprint(data.features);
-  const stats  = buildStats(data, groups);
 
   // ─── Render ──────────────────────────────────────────────────────────────
   return (
@@ -223,11 +226,11 @@ export default function Results() {
           <span className={styles.logoText}>PriorityAI</span>
         </div>
         <div className={styles.breadcrumb}>
-          <a href="/" className={styles.breadcrumbLink}>Home</a>
+          <Link href="/" className={styles.breadcrumbLink}>Home</Link>
           <span className={styles.breadcrumbSep}>/</span>
-          <a href="/analyze" className={styles.breadcrumbLink}>Workspace</a>
+          <Link href="/analyze" className={styles.breadcrumbLink}>Workspace</Link>
           <span className={styles.breadcrumbSep}>/</span>
-          <a href="/history" className={styles.breadcrumbLink}>My History</a>
+          <Link href="/history" className={styles.breadcrumbLink}>My History</Link>
           <span className={styles.breadcrumbSep}>/</span>
           <span className={styles.breadcrumbCurrent}>
             Results · {data.features.length} features analyzed
@@ -328,7 +331,7 @@ export default function Results() {
                     ))}
                   </div>
 
-                  {f.reasoning && <p className={styles.reasoning}>"{f.reasoning}"</p>}
+                  {f.reasoning && <p className={styles.reasoning}>&quot;{f.reasoning}&quot;</p>}
 
                   {f.risks?.length > 0 && (
                     <div className={styles.risks}>
@@ -398,7 +401,7 @@ export default function Results() {
                             ))}
                           </div>
 
-                          {f.reasoning && <p className={styles.roadmapReason}>"{f.reasoning}"</p>}
+                          {f.reasoning && <p className={styles.roadmapReason}>&quot;{f.reasoning}&quot;</p>}
 
                           {f.risks?.length > 0 && (
                             <div className={styles.risks}>
