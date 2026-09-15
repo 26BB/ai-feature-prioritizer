@@ -25,10 +25,10 @@ export default function LandingHome() {
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className={pageStyles.logo} onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
+        <Link href="/" className={pageStyles.logo}>
           <span className={pageStyles.logoIcon}>◈</span>
           <span className={pageStyles.logoText}>PriorityAI</span>
-        </div>
+        </Link>
         <div className={pageStyles.navLinks}>
           <Link href="/" className={`${pageStyles.navLink} ${pageStyles.navActive}`}>Home</Link>
           <Link href="/analyze" className={pageStyles.navLink}>Workspace</Link>
