@@ -1,10 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
 import styles from './page.module.css';
+
+/**
+ * Bolt Optimization: Helper function to compute sprint counts (NOW, NEXT)
+ * in a single pass over features array instead of multiple .filter() calls.
+ */
+function getSprintCounts(features) {
+  let now = 0;
+  let next = 0;
+  if (!Array.isArray(features)) return { now, next };
+  for (let i = 0; i < features.length; i++) {
+    const s = features[i]?.sprint?.toUpperCase();
+    if (s === 'NOW') now++;
+    else if (s === 'NEXT') next++;
+  }
+  return { now, next };
+}
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -72,9 +88,23 @@ export default function HistoryPage() {
     }
   }
 
-  const totalSessions = history.length;
-  const totalFeaturesEvaluated = history.reduce((acc, curr) => acc + (curr.featureCount || curr.features?.length || 0), 0);
-  const highestRiceScore = history.reduce((max, curr) => Math.max(max, curr.topRice || 0), 0);
+  // Bolt Optimization: Memoize aggregate history metrics to prevent O(N) array reductions on re-renders (e.g. state/modal changes)
+  const { totalSessions, totalFeaturesEvaluated, highestRiceScore } = useMemo(() => {
+    let totalFeats = 0;
+    let maxRice = 0;
+    for (let i = 0; i < history.length; i++) {
+      const curr = history[i];
+      totalFeats += curr.featureCount || curr.features?.length || 0;
+      if ((curr.topRice || 0) > maxRice) {
+        maxRice = curr.topRice || 0;
+      }
+    }
+    return {
+      totalSessions: history.length,
+      totalFeaturesEvaluated: totalFeats,
+      highestRiceScore: maxRice,
+    };
+  }, [history]);
 
   return (
     <div className={styles.page}>
@@ -188,8 +218,8 @@ export default function HistoryPage() {
                     })
                   : 'Recent';
 
-                const nowCount = item.features?.filter((f) => f.sprint?.toUpperCase() === 'NOW').length || 0;
-                const nextCount = item.features?.filter((f) => f.sprint?.toUpperCase() === 'NEXT').length || 0;
+                // Bolt Optimization: Single O(N) pass to get sprint counts instead of double .filter() array allocations per card render
+                const { now: nowCount, next: nextCount } = getSprintCounts(item.features);
 
                 return (
                   <div key={item.id} className={`${styles.historyCard} glass-card`}>
