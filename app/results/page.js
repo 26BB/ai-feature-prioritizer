@@ -221,10 +221,10 @@ export default function Results() {
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className={styles.logo}>
+        <Link href="/" className={styles.logo}>
           <span className={styles.logoIcon}>◈</span>
           <span className={styles.logoText}>PriorityAI</span>
-        </div>
+        </Link>
         <div className={styles.breadcrumb}>
           <Link href="/" className={styles.breadcrumbLink}>Home</Link>
           <span className={styles.breadcrumbSep}>/</span>
@@ -268,10 +268,14 @@ export default function Results() {
       {/* ── Tab bar ── */}
       <div className={styles.tabBar}>
         <div className="container">
-          <div className={styles.tabs}>
+          <div className={styles.tabs} role="tablist" aria-label="Analysis views">
             {TABS.map((label, i) => (
               <button
                 key={label}
+                id={`tab-${i}`}
+                role="tab"
+                aria-selected={activeTab === i}
+                aria-controls={`tabpanel-${i}`}
                 onClick={() => setActiveTab(i)}
                 className={`${styles.tab} ${activeTab === i ? styles.tabActive : ''}`}
               >
@@ -288,7 +292,7 @@ export default function Results() {
 
           {/* Tab 0 — Score Cards */}
           {activeTab === 0 && (
-            <div className={styles.cardsGrid}>
+            <div id="tabpanel-0" role="tabpanel" aria-labelledby="tab-0" className={styles.cardsGrid}>
               {data.features.map((f, i) => (
                 <div
                   key={f.name}
@@ -347,7 +351,7 @@ export default function Results() {
 
           {/* Tab 1 — Matrix Chart */}
           {activeTab === 1 && (
-            <div className={`${styles.chartSection} glass-card`}>
+            <div id="tabpanel-1" role="tabpanel" aria-labelledby="tab-1" className={`${styles.chartSection} glass-card`}>
               <div className={styles.chartHeader}>
                 <h2>Effort vs Impact Matrix</h2>
                 <p className={styles.chartSubtitle}>Bubble size = RICE score magnitude</p>
@@ -366,7 +370,7 @@ export default function Results() {
 
           {/* Tab 2 — Roadmap */}
           {activeTab === 2 && (
-            <div className={styles.roadmap}>
+            <div id="tabpanel-2" role="tabpanel" aria-labelledby="tab-2" className={styles.roadmap}>
               {SPRINT_LANES.map(({ key, icon, label, cssClass }) => (
                 <div key={key} className={styles.swimLane}>
                   <div className={`${styles.laneHeader} ${styles[cssClass]}`}>
