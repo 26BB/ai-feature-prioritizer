@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -73,9 +73,32 @@ export default function HistoryPage() {
     }
   }
 
+  // Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
+  function getSprintCounts(features) {
+    let now = 0;
+    let next = 0;
+    if (Array.isArray(features)) {
+      for (let i = 0; i < features.length; i++) {
+        const sprint = features[i]?.sprint?.toUpperCase();
+        if (sprint === 'NOW') now++;
+        else if (sprint === 'NEXT') next++;
+      }
+    }
+    return { now, next };
+  }
+
   const totalSessions = history.length;
-  const totalFeaturesEvaluated = history.reduce((acc, curr) => acc + (curr.featureCount || curr.features?.length || 0), 0);
-  const highestRiceScore = history.reduce((max, curr) => Math.max(max, curr.topRice || 0), 0);
+  // Bolt optimization: Memoize aggregate stats computation in a single pass to eliminate redundant .reduce traversals on non-history state changes
+  const { totalFeaturesEvaluated, highestRiceScore } = useMemo(() => {
+    let totalFeatures = 0;
+    let maxScore = 0;
+    for (let i = 0; i < history.length; i++) {
+      const item = history[i];
+      totalFeatures += item.featureCount || item.features?.length || 0;
+      if ((item.topRice || 0) > maxScore) maxScore = item.topRice || 0;
+    }
+    return { totalFeaturesEvaluated: totalFeatures, highestRiceScore: maxScore };
+  }, [history]);
 
   return (
     <div className={styles.page}>
@@ -190,8 +213,8 @@ export default function HistoryPage() {
                     })
                   : 'Recent';
 
-                const nowCount = item.features?.filter((f) => f.sprint?.toUpperCase() === 'NOW').length || 0;
-                const nextCount = item.features?.filter((f) => f.sprint?.toUpperCase() === 'NEXT').length || 0;
+                // Bolt optimization: Single-pass sprint count retrieval without intermediate array allocations
+                const { now: nowCount, next: nextCount } = getSprintCounts(item.features);
 
                 return (
                   <div key={item.id} className={`${styles.historyCard} glass-card`}>
