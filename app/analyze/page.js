@@ -171,10 +171,10 @@ export default function AnalyzePage() {
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className={styles.logo} onClick={() => router.push('/')} style={{ cursor: 'pointer' }}>
+        <Link href="/" className={styles.logo}>
           <span className={styles.logoIcon}>◈</span>
           <span className={styles.logoText}>PriorityAI</span>
-        </div>
+        </Link>
         <div className={styles.navLinks}>
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
