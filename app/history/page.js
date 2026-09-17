@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
+import { sanitizeCsvCell } from '@/lib/scoring';
 import styles from './page.module.css';
 
 export default function HistoryPage() {
@@ -43,17 +44,16 @@ export default function HistoryPage() {
 
   function handleExportCSV(session) {
     if (!session || !session.features) return;
-    const escape = (str) => `"${(str ?? '').replace(/"/g, '""')}"`;
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
     const rows = session.features.map((f) => [
-      escape(f.name),
+      sanitizeCsvCell(f.name),
       f.rice_score,
       f.sprint,
       f.reach,
       f.impact,
       f.confidence,
       f.effort,
-      escape(f.reasoning),
+      sanitizeCsvCell(f.reasoning),
     ]);
 
     const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');

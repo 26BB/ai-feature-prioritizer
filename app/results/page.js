@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
-import { groupBySprint, getScoreColor } from '@/lib/scoring';
+import { groupBySprint, getScoreColor, sanitizeCsvCell } from '@/lib/scoring';
 import styles from './page.module.css';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -161,14 +161,11 @@ export default function Results() {
   function exportCSV() {
     if (!data) return;
 
-    // ponytail: double-quote escaping per RFC 4180; ceiling = no multi-line fields
-    const escape = (str) => `"${(str ?? '').replace(/"/g, '""')}"`;
-
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
     const rows    = data.features.map((f) => [
-      escape(f.name), f.rice_score, f.sprint,
+      sanitizeCsvCell(f.name), f.rice_score, f.sprint,
       f.reach, f.impact, f.confidence, f.effort,
-      escape(f.reasoning),
+      sanitizeCsvCell(f.reasoning),
     ]);
 
     const csv  = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
