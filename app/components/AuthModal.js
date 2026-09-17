@@ -14,13 +14,24 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset state when modal opens or mode changes
+  // Reset state when modal opens or mode changes & add Escape key listener
   useEffect(() => {
     setErrorMsg('');
     setEmail('');
     setPassword('');
     setDisplayName('');
-  }, [isOpen, mode]);
+
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, mode, onClose]);
 
   if (!isOpen) return null;
 
@@ -68,14 +79,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+      >
         <button onClick={onClose} className={styles.closeBtn} aria-label="Close modal">
           ✕
         </button>
 
         <div className={styles.header}>
           <div className={styles.badge}>◈ PriorityAI Auth</div>
-          <h2 className={styles.title}>
+          <h2 id="auth-modal-title" className={styles.title}>
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h2>
           <p className={styles.subtitle}>
