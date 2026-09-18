@@ -1,11 +1,6 @@
 'use client';
 
- jules-15395834619231658003-4baf4a30
 import { useState, useEffect, useMemo } from 'react';
-
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
- master
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
@@ -119,10 +114,10 @@ export default function HistoryPage() {
 
       {/* ── Navbar ── */}
       <nav className="navbar">
-        <Link href="/" className={styles.logo}>
+        <div className={styles.logo}>
           <span className={styles.logoIcon}>◈</span>
           <span className={styles.logoText}>PriorityAI</span>
-        </Link>
+        </div>
         <div className={styles.navRight}>
           <button onClick={() => router.push('/')} className="btn-ghost" style={{ fontSize: '13px', padding: '6px 14px' }}>
             ← Dashboard
@@ -137,7 +132,6 @@ export default function HistoryPage() {
                 onClick={logout}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: '4px' }}
                 title="Sign Out"
-                aria-label="Sign Out"
               >
                 🚪
               </button>
