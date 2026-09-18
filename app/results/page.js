@@ -64,6 +64,25 @@ export default function Results() {
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
   const chartRef                  = useRef(null);
   const chartInstance             = useRef(null);
+  const tabRefs                   = useRef([]);
+
+  const handleTabKeyDown = (e, index) => {
+    let newIndex = index;
+    if (e.key === 'ArrowRight') {
+      newIndex = (index + 1) % TABS.length;
+    } else if (e.key === 'ArrowLeft') {
+      newIndex = (index - 1 + TABS.length) % TABS.length;
+    } else if (e.key === 'Home') {
+      newIndex = 0;
+    } else if (e.key === 'End') {
+      newIndex = TABS.length - 1;
+    } else {
+      return;
+    }
+    e.preventDefault();
+    setActiveTab(newIndex);
+    tabRefs.current[newIndex]?.focus();
+  };
 
 
   // ─── Load results from sessionStorage on mount (ensures SSR hydration safety) ───
@@ -282,11 +301,16 @@ export default function Results() {
             {TABS.map((label, i) => (
               <button
                 key={label}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
                 id={`tab-${i}`}
                 role="tab"
+                tabIndex={activeTab === i ? 0 : -1}
                 aria-selected={activeTab === i}
                 aria-controls={`tabpanel-${i}`}
                 onClick={() => setActiveTab(i)}
+                onKeyDown={(e) => handleTabKeyDown(e, i)}
                 className={`${styles.tab} ${activeTab === i ? styles.tabActive : ''}`}
               >
                 {TAB_ICONS[i]} {label}
