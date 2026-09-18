@@ -26,6 +26,16 @@ const RICE_BARS = [
   { label: 'Effort',     field: 'effort',     max: 10,  suffix: '',  inverse: true  },
 ];
 
+/** Roadmap card mini stats definitions (Bolt optimization: avoids inline array allocations & uppercase string transforms on render) */
+const ROADMAP_MINI_STATS = [
+  { key: 'reach',  label: 'R' },
+  { key: 'impact', label: 'I' },
+  { key: 'effort', label: 'E' },
+];
+
+/** Module-level flag to avoid redundant Chart.js plugin registration on repeated tab toggles */
+let isChartRegistered = false;
+
 /** Amber-theme colors for chart bubbles — mirrors globals.css tokens */
 const BUBBLE_COLORS = {
   NOW:   { bg: 'rgba(16,185,129,0.45)',  border: '#10b981' },
@@ -97,7 +107,10 @@ export default function Results() {
 
     async function drawChart() {
       const { Chart, registerables } = await import('chart.js');
-      Chart.register(...registerables);
+      if (!isChartRegistered) {
+        Chart.register(...registerables);
+        isChartRegistered = true;
+      }
 
       // Destroy previous instance to avoid canvas reuse errors
       if (chartInstance.current) {
@@ -182,7 +195,7 @@ export default function Results() {
 
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
     const rows    = data.features.map((f) => [
-      sanitizeCsvCell(f.name), f.rice_score, f.sprint,
+      sanitizeCsvCell(f.name), f.rice_score, sanitizeCsvCell(f.sprint),
       f.reach, f.impact, f.confidence, f.effort,
       sanitizeCsvCell(f.reasoning),
     ]);
@@ -416,12 +429,12 @@ export default function Results() {
                             </span>
                           </div>
 
-                          {/* Mini R / I / E chips */}
+                          {/* Mini R / I / E chips (Bolt optimization: uses pre-allocated mini stat config) */}
                           <div className={styles.roadmapComponents}>
-                            {['reach', 'impact', 'effort'].map((k) => (
-                              <div key={k} className={styles.miniStat}>
-                                <span className={styles.miniLabel}>{k[0].toUpperCase()}</span>
-                                <span className={styles.miniVal}>{f[k]}</span>
+                            {ROADMAP_MINI_STATS.map((s) => (
+                              <div key={s.key} className={styles.miniStat}>
+                                <span className={styles.miniLabel}>{s.label}</span>
+                                <span className={styles.miniVal}>{f[s.key]}</span>
                               </div>
                             ))}
                           </div>
