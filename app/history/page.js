@@ -48,7 +48,7 @@ export default function HistoryPage() {
     const rows = session.features.map((f) => [
       sanitizeCsvCell(f.name),
       f.rice_score,
-      f.sprint,
+      sanitizeCsvCell(f.sprint),
       f.reach,
       f.impact,
       f.confidence,

@@ -176,7 +176,7 @@ export default function Results() {
 
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
     const rows    = data.features.map((f) => [
-      sanitizeCsvCell(f.name), f.rice_score, f.sprint,
+      sanitizeCsvCell(f.name), f.rice_score, sanitizeCsvCell(f.sprint),
       f.reach, f.impact, f.confidence, f.effort,
       sanitizeCsvCell(f.reasoning),
     ]);
