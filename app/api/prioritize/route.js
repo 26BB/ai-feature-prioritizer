@@ -44,9 +44,16 @@ export async function POST(request) {
       sanitizedFeatures.push({ name, description, category });
     }
 
-    // Extract BYOK headers if passed by client
-    const userProvider = request.headers.get('x-provider') || 'auto';
-    const userApiKey = request.headers.get('x-api-key') || '';
+    // Extract & validate BYOK headers if passed by client (prevents parameter tampering & DoS via oversized keys)
+    const rawProvider = (request.headers.get('x-provider') || 'auto').toLowerCase().trim();
+    const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
+    const userProvider = ALLOWED_PROVIDERS.has(rawProvider) ? rawProvider : 'auto';
+
+    const rawApiKey = request.headers.get('x-api-key') || '';
+    if (rawApiKey.length > 256) {
+      return Response.json({ error: 'API key exceeds maximum permitted length (256 characters)' }, { status: 400 });
+    }
+    const userApiKey = rawApiKey.replace(/[\r\n\t]/g, '').trim();
 
     const { features: scoredFeatures, source } = await prioritizeFeatures({
       features: sanitizedFeatures,
