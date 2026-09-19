@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { auth, db, googleProvider, isFirebaseConfigured } from '@/lib/firebase';
 import {
   signInWithPopup,
@@ -82,9 +82,9 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // ─── Auth Methods ─────────────────────────────────────────────────────────
+  // ─── Auth Methods (Bolt optimization: memoized callbacks prevent unnecessary re-renders) ───
 
-  async function signInWithGoogle() {
+  const signInWithGoogle = useCallback(async () => {
     if (isFirebaseConfigured && auth && googleProvider) {
       const result = await signInWithPopup(auth, googleProvider);
       const u = result.user;
@@ -111,9 +111,9 @@ export function AuthProvider({ children }) {
       setUser(mockUser);
       return mockUser;
     }
-  }
+  }, []);
 
-  async function loginWithEmail(email, password) {
+  const loginWithEmail = useCallback(async (email, password) => {
     if (!email || !password) {
       throw new Error('Please fill in both email and password.');
     }
@@ -144,9 +144,9 @@ export function AuthProvider({ children }) {
       setUser(mockUser);
       return mockUser;
     }
-  }
+  }, []);
 
-  async function signupWithEmail(email, password, displayName) {
+  const signupWithEmail = useCallback(async (email, password, displayName) => {
     if (!email || !password) {
       throw new Error('Please fill in both email and password.');
     }
@@ -187,9 +187,9 @@ export function AuthProvider({ children }) {
       setUser(mockUser);
       return mockUser;
     }
-  }
+  }, []);
 
-  async function logout() {
+  const logout = useCallback(async () => {
     if (isFirebaseConfigured && auth) {
       await firebaseSignOut(auth);
     } else {
@@ -198,11 +198,11 @@ export function AuthProvider({ children }) {
       }
     }
     setUser(null);
-  }
+  }, []);
 
-  // ─── Database History Methods ─────────────────────────────────────────────
+  // ─── Database History Methods (Bolt optimization: memoized callbacks prevent redundant history fetches) ───
 
-  async function saveSessionToHistory(sessionData) {
+  const saveSessionToHistory = useCallback(async (sessionData) => {
     if (!user) {
       throw new Error('You must be logged in to save prioritization history.');
     }
@@ -248,9 +248,9 @@ export function AuthProvider({ children }) {
       }
       return newItem.id;
     }
-  }
+  }, [user]);
 
-  async function getUserHistory() {
+  const getUserHistory = useCallback(async () => {
     if (!user) return [];
 
     if (isFirebaseConfigured && db) {
@@ -276,9 +276,9 @@ export function AuthProvider({ children }) {
       const mockHistory = JSON.parse(localStorage.getItem('priority_history_mock') || '[]');
       return mockHistory.filter((item) => item.userId === user.uid);
     }
-  }
+  }, [user]);
 
-  async function deleteHistoryItem(id) {
+  const deleteHistoryItem = useCallback(async (id) => {
     if (!user) return;
 
     if (isFirebaseConfigured && db) {
@@ -291,23 +291,38 @@ export function AuthProvider({ children }) {
         localStorage.setItem('priority_history_mock', JSON.stringify(filtered));
       }
     }
-  }
+  }, [user]);
+
+  // Bolt optimization: Memoize context value to prevent unnecessary re-renders of all context consumers on parent state updates
+  const contextValue = useMemo(
+    () => ({
+      user,
+      loading,
+      isDemoMode,
+      signInWithGoogle,
+      loginWithEmail,
+      signupWithEmail,
+      logout,
+      saveSessionToHistory,
+      getUserHistory,
+      deleteHistoryItem,
+    }),
+    [
+      user,
+      loading,
+      isDemoMode,
+      signInWithGoogle,
+      loginWithEmail,
+      signupWithEmail,
+      logout,
+      saveSessionToHistory,
+      getUserHistory,
+      deleteHistoryItem,
+    ]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isDemoMode,
-        signInWithGoogle,
-        loginWithEmail,
-        signupWithEmail,
-        logout,
-        saveSessionToHistory,
-        getUserHistory,
-        deleteHistoryItem,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
