@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthModal.module.css';
 
@@ -13,6 +13,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [displayName, setDisplayName] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const loginTabRef = useRef(null);
+  const signupTabRef = useRef(null);
+
+  const handleTabKeyDown = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const nextMode = mode === 'login' ? 'signup' : 'login';
+      setMode(nextMode);
+      if (nextMode === 'login') {
+        loginTabRef.current?.focus();
+      } else {
+        signupTabRef.current?.focus();
+      }
+    }
+  };
 
   // Reset state when modal opens or mode changes & add Escape key listener
   useEffect(() => {
@@ -141,25 +157,39 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         {/* Mode Tabs */}
-        <div className={styles.tabBar}>
+        <div className={styles.tabBar} role="tablist" aria-label="Authentication mode">
           <button
+            ref={loginTabRef}
+            id="auth-tab-login"
             type="button"
+            role="tab"
+            aria-selected={mode === 'login'}
+            aria-controls="auth-form"
+            tabIndex={mode === 'login' ? 0 : -1}
             className={`${styles.tab} ${mode === 'login' ? styles.tabActive : ''}`}
             onClick={() => setMode('login')}
+            onKeyDown={handleTabKeyDown}
           >
             Sign In
           </button>
           <button
+            ref={signupTabRef}
+            id="auth-tab-signup"
             type="button"
+            role="tab"
+            aria-selected={mode === 'signup'}
+            aria-controls="auth-form"
+            tabIndex={mode === 'signup' ? 0 : -1}
             className={`${styles.tab} ${mode === 'signup' ? styles.tabActive : ''}`}
             onClick={() => setMode('signup')}
+            onKeyDown={handleTabKeyDown}
           >
             Sign Up
           </button>
         </div>
 
         {/* Email / Password Form */}
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form id="auth-form" onSubmit={handleSubmit} className={styles.form}>
           {mode === 'signup' && (
             <div className={styles.fieldGroup}>
               <label htmlFor="auth-name" className={styles.label}>
