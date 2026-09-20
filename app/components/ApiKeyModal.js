@@ -121,6 +121,12 @@ export default function ApiKeyModal({ isOpen, onClose }) {
                   placeholder={`Paste your ${provider.toUpperCase()} key...`}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSave();
+                    }
+                  }}
                   className={styles.textInput}
                 />
                 <button
@@ -151,6 +157,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
               onClick={handleClearCache}
               disabled={cacheCount === 0}
               className={styles.clearCacheBtn}
+              title={cacheCount === 0 ? 'No cached items to clear' : 'Clear cached response items'}
             >
               Clear Cache
             </button>
@@ -158,7 +165,11 @@ export default function ApiKeyModal({ isOpen, onClose }) {
         </div>
 
         <div className={styles.footer}>
-          {savedSuccess && <span className={styles.savedBadge}>✅ Saved!</span>}
+          {savedSuccess && (
+            <span className={styles.savedBadge} role="status" aria-live="polite">
+              ✅ Saved!
+            </span>
+          )}
           <button className={styles.saveBtn} onClick={handleSave}>
             Save Preferences
           </button>
