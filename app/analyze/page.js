@@ -110,6 +110,17 @@ export default function AnalyzePage() {
     if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
   }
 
+  function handleResetForm() {
+    const isDirty = features.some((f) => f.name.trim() || f.description.trim());
+    if (isDirty) {
+      if (!window.confirm('Are you sure you want to reset the form? All entered features will be cleared.')) {
+        return;
+      }
+    }
+    setFeatures([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
+    setError('');
+  }
+
   const removeFeature = useCallback((idx) => {
     setFeatures((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev));
   }, []);
@@ -266,7 +277,7 @@ export default function AnalyzePage() {
             </button>
           )}
           <button
-            onClick={() => setFeatures([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()])}
+            onClick={handleResetForm}
             className="btn-primary"
             style={{ padding: '8px 18px', fontSize: '13px' }}
           >
@@ -315,7 +326,7 @@ export default function AnalyzePage() {
               </button>
             )}
 
-            {error && <div className={styles.errorMsg}>⚠️ {error}</div>}
+            {error && <div className={styles.errorMsg} role="alert">⚠️ {error}</div>}
 
             <button
               onClick={handleAnalyze}
