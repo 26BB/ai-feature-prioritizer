@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -52,6 +52,99 @@ const buildStats = (data, groups) => [
   { label: 'Top RICE',       val: data.features[0]?.rice_score,   color: 'var(--primary)'       },
   { label: 'AI Source',      val: data.isCached ? '⚡ Cached (0 Cost)' : (data.model || 'Multi-Provider AI'), color: data.isCached ? '#38bdf8' : 'var(--primary-light)' },
 ];
+
+// Bolt optimization: Memoized ScoreCard prevents re-rendering all cards when parent state changes (e.g. saveStatus, isAuthModalOpen)
+const ScoreCard = memo(function ScoreCard({ feature, index }) {
+  return (
+    <div
+      className={`${styles.scoreCard} glass-card animate-fade-in`}
+      style={{ animationDelay: `${index * 0.08}s` }}
+    >
+      <div className={styles.cardTop}>
+        <h3 className={styles.featureName}>{feature.name}</h3>
+        {/* ponytail: optional chaining guards null sprint from LLM */}
+        <span className={`badge-${(feature.sprint ?? 'later').toLowerCase()}`}>
+          {feature.sprint ?? 'LATER'}
+        </span>
+      </div>
+
+      <div className={styles.riceScore}>
+        <span className="score-number">{feature.rice_score}</span>
+        <span className={styles.riceLabel}>RICE</span>
+      </div>
+
+      {/* RICE component mini-bars */}
+      <div className={styles.riceComponents}>
+        {RICE_BARS.map((bar) => (
+          <div key={bar.label} className={styles.component}>
+            <div className={styles.componentHeader}>
+              <span className={styles.componentLabel}>{bar.label}</span>
+              <span className={styles.componentVal}>{feature[bar.field]}{bar.suffix}</span>
+            </div>
+            <div className={styles.componentBar}>
+              <div
+                className={styles.componentFill}
+                style={{
+                  width: `${(feature[bar.field] / bar.max) * 100}%`,
+                  background: bar.inverse
+                    ? (feature[bar.field] > 6 ? 'var(--danger)' : 'var(--secondary)')
+                    : 'var(--gradient-primary)',
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {feature.reasoning && <p className={styles.reasoning}>&quot;{feature.reasoning}&quot;</p>}
+
+      {feature.risks?.length > 0 && (
+        <div className={styles.risks}>
+          {feature.risks.slice(0, 3).map((r) => (
+            <span key={r} className="tag-risk">⚠ {r}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Bolt optimization: Memoized RoadmapCard component prevents redundant re-renders of roadmap cards when parent state changes
+const RoadmapCard = memo(function RoadmapCard({ feature }) {
+  return (
+    <div className={`${styles.roadmapCard} glass-card`}>
+      <div className={styles.roadmapTop}>
+        <span className={styles.roadmapName}>{feature.name}</span>
+        <span
+          className={styles.roadmapScore}
+          style={{ color: getScoreColor(feature.rice_score) }}
+        >
+          {feature.rice_score}
+        </span>
+      </div>
+
+      {/* Mini R / I / E chips (Bolt optimization: uses pre-allocated mini stat config) */}
+      <div className={styles.roadmapComponents}>
+        {ROADMAP_MINI_STATS.map((s) => (
+          <div key={s.key} className={styles.miniStat}>
+            <span className={styles.miniLabel}>{s.label}</span>
+            <span className={styles.miniVal}>{feature[s.key]}</span>
+          </div>
+        ))}
+      </div>
+
+      {feature.reasoning && <p className={styles.roadmapReason}>&quot;{feature.reasoning}&quot;</p>}
+
+      {feature.risks?.length > 0 && (
+        <div className={styles.risks}>
+          {feature.risks.slice(0, 2).map((r) => (
+            <span key={r} className="tag-risk">⚠ {r}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+});
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Results() {
@@ -328,57 +421,7 @@ export default function Results() {
           {activeTab === 0 && (
             <div id="tabpanel-0" role="tabpanel" aria-labelledby="tab-0" className={styles.cardsGrid}>
               {data.features.map((f, i) => (
-                <div
-                  key={f.name}
-                  className={`${styles.scoreCard} glass-card animate-fade-in`}
-                  style={{ animationDelay: `${i * 0.08}s` }}
-                >
-                  <div className={styles.cardTop}>
-                    <h3 className={styles.featureName}>{f.name}</h3>
-                    {/* ponytail: optional chaining guards null sprint from LLM */}
-                    <span className={`badge-${(f.sprint ?? 'later').toLowerCase()}`}>
-                      {f.sprint ?? 'LATER'}
-                    </span>
-                  </div>
-
-                  <div className={styles.riceScore}>
-                    <span className="score-number">{f.rice_score}</span>
-                    <span className={styles.riceLabel}>RICE</span>
-                  </div>
-
-                  {/* RICE component mini-bars */}
-                  <div className={styles.riceComponents}>
-                    {RICE_BARS.map((bar) => (
-                      <div key={bar.label} className={styles.component}>
-                        <div className={styles.componentHeader}>
-                          <span className={styles.componentLabel}>{bar.label}</span>
-                          <span className={styles.componentVal}>{f[bar.field]}{bar.suffix}</span>
-                        </div>
-                        <div className={styles.componentBar}>
-                          <div
-                            className={styles.componentFill}
-                            style={{
-                              width:      `${(f[bar.field] / bar.max) * 100}%`,
-                              background: bar.inverse
-                                ? (f[bar.field] > 6 ? 'var(--danger)' : 'var(--secondary)')
-                                : 'var(--gradient-primary)',
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {f.reasoning && <p className={styles.reasoning}>&quot;{f.reasoning}&quot;</p>}
-
-                  {f.risks?.length > 0 && (
-                    <div className={styles.risks}>
-                      {f.risks.slice(0, 3).map((r) => (
-                        <span key={r} className="tag-risk">⚠ {r}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ScoreCard key={f.name} feature={f} index={i} />
               ))}
             </div>
           )}
@@ -418,37 +461,7 @@ export default function Results() {
                       <div className={styles.emptyLane}>No features in this sprint</div>
                     ) : (
                       groups[key].map((f) => (
-                        <div key={f.name} className={`${styles.roadmapCard} glass-card`}>
-                          <div className={styles.roadmapTop}>
-                            <span className={styles.roadmapName}>{f.name}</span>
-                            <span
-                              className={styles.roadmapScore}
-                              style={{ color: getScoreColor(f.rice_score) }}
-                            >
-                              {f.rice_score}
-                            </span>
-                          </div>
-
-                          {/* Mini R / I / E chips (Bolt optimization: uses pre-allocated mini stat config) */}
-                          <div className={styles.roadmapComponents}>
-                            {ROADMAP_MINI_STATS.map((s) => (
-                              <div key={s.key} className={styles.miniStat}>
-                                <span className={styles.miniLabel}>{s.label}</span>
-                                <span className={styles.miniVal}>{f[s.key]}</span>
-                              </div>
-                            ))}
-                          </div>
-
-                          {f.reasoning && <p className={styles.roadmapReason}>&quot;{f.reasoning}&quot;</p>}
-
-                          {f.risks?.length > 0 && (
-                            <div className={styles.risks}>
-                              {f.risks.slice(0, 2).map((r) => (
-                                <span key={r} className="tag-risk">⚠ {r}</span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <RoadmapCard key={f.name} feature={f} />
                       ))
                     )}
                   </div>
