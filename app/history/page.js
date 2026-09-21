@@ -45,14 +45,15 @@ export default function HistoryPage() {
   function handleExportCSV(session) {
     if (!session || !session.features) return;
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
+    // Security: Sanitize all CSV fields to prevent CSV Formula Injection (CWE-1236)
     const rows = session.features.map((f) => [
       sanitizeCsvCell(f.name),
-      f.rice_score,
+      sanitizeCsvCell(f.rice_score),
       sanitizeCsvCell(f.sprint),
-      f.reach,
-      f.impact,
-      f.confidence,
-      f.effort,
+      sanitizeCsvCell(f.reach),
+      sanitizeCsvCell(f.impact),
+      sanitizeCsvCell(f.confidence),
+      sanitizeCsvCell(f.effort),
       sanitizeCsvCell(f.reasoning),
     ]);
 
