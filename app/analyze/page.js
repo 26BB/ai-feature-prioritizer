@@ -67,7 +67,15 @@ const FeatureCard = memo(function FeatureCard({
       </div>
 
       <div className={styles.fieldGroup}>
-        <label htmlFor={`desc-${idx}`} className={styles.fieldLabel}>Description</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label htmlFor={`desc-${idx}`} className={styles.fieldLabel}>Description</label>
+          <span
+            id={`desc-count-${idx}`}
+            style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}
+          >
+            {(feature.description || '').length}/500
+          </span>
+        </div>
         <textarea
           id={`desc-${idx}`}
           className={`input-field ${styles.textarea}`}
@@ -75,6 +83,8 @@ const FeatureCard = memo(function FeatureCard({
           value={feature.description}
           onChange={(e) => onUpdate(idx, 'description', e.target.value)}
           rows={3}
+          maxLength={500}
+          aria-describedby={`desc-count-${idx}`}
         />
       </div>
 
