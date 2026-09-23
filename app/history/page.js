@@ -1,12 +1,107 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
 import { sanitizeCsvCell } from '@/lib/scoring';
 import styles from './page.module.css';
+
+// Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
+function getSprintCounts(features) {
+  let now = 0;
+  let next = 0;
+  if (Array.isArray(features)) {
+    for (let i = 0; i < features.length; i++) {
+      const sprint = features[i]?.sprint?.toUpperCase();
+      if (sprint === 'NOW') now++;
+      else if (sprint === 'NEXT') next++;
+    }
+  }
+  return { now, next };
+}
+
+// Bolt optimization: Memoized HistoryCard component prevents re-rendering history cards and running ICU locale date formatting on parent state updates (e.g. auth modal toggles)
+const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onReopen }) {
+  const dateStr = item.createdAt
+    ? new Date(item.createdAt).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Recent';
+
+  const { now: nowCount, next: nextCount } = getSprintCounts(item.features);
+
+  return (
+    <div className={`${styles.historyCard} glass-card`}>
+      <div className={styles.cardTop}>
+        <div>
+          <div className={styles.sessionTitle}>{item.title}</div>
+          <div className={styles.sessionMeta}>
+            <span>📅 {dateStr}</span>
+            <span>•</span>
+            <span>🤖 {item.model || 'Multi-Provider AI'}</span>
+          </div>
+        </div>
+
+        <div className={styles.pillsRow}>
+          <span className={styles.pill}>{item.featureCount || item.features?.length || 0} Features</span>
+          <span className="badge-now">{nowCount} NOW</span>
+          <span className="badge-next">{nextCount} NEXT</span>
+          <span className={styles.pill} style={{ borderColor: 'rgba(245, 158, 11, 0.3)', color: 'var(--primary-light)' }}>
+            Top RICE: {item.topRice}
+          </span>
+        </div>
+      </div>
+
+      {/* Features preview */}
+      {item.features?.length > 0 && (
+        <div className={styles.featurePreviewList}>
+          {item.features.slice(0, 3).map((f) => (
+            <div key={f.name} className={styles.previewItem}>
+              <span className={styles.previewName}>{f.name}</span>
+              <div className={styles.previewRight}>
+                <span className={`badge-${(f.sprint || 'later').toLowerCase()}`}>
+                  {f.sprint || 'LATER'}
+                </span>
+                <span className={styles.previewScore}>{f.rice_score}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className={styles.cardActions}>
+        <button
+          onClick={() => onDelete(item.id)}
+          className="btn-ghost"
+          style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--danger)' }}
+        >
+          🗑️ Delete
+        </button>
+        <button
+          onClick={() => onExportCSV(item)}
+          className="btn-ghost"
+          style={{ padding: '6px 12px', fontSize: '12px' }}
+        >
+          ⬇ Export CSV
+        </button>
+        <button
+          onClick={() => onReopen(item)}
+          className="btn-primary"
+          style={{ padding: '6px 16px', fontSize: '13px' }}
+        >
+          🚀 Re-open Session →
+        </button>
+      </div>
+    </div>
+  );
+});
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -31,7 +126,7 @@ export default function HistoryPage() {
     loadHistory();
   }, [user, getUserHistory]);
 
-  function handleReopen(session) {
+  const handleReopen = useCallback((session) => {
     if (!session || !session.features) return;
     const resultData = {
       features: session.features,
@@ -40,9 +135,9 @@ export default function HistoryPage() {
     };
     sessionStorage.setItem('priorityResults', JSON.stringify(resultData));
     router.push('/results');
-  }
+  }, [router]);
 
-  function handleExportCSV(session) {
+  const handleExportCSV = useCallback((session) => {
     if (!session || !session.features) return;
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
     // Security: Sanitize all CSV fields to prevent CSV Formula Injection (CWE-1236)
@@ -65,28 +160,14 @@ export default function HistoryPage() {
     });
     link.click();
     URL.revokeObjectURL(url);
-  }
+  }, []);
 
-  async function handleDelete(id) {
+  const handleDelete = useCallback(async (id) => {
     if (confirm('Are you sure you want to delete this prioritization from history?')) {
       await deleteHistoryItem(id);
       setHistory((prev) => prev.filter((item) => item.id !== id));
     }
-  }
-
-  // Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
-  function getSprintCounts(features) {
-    let now = 0;
-    let next = 0;
-    if (Array.isArray(features)) {
-      for (let i = 0; i < features.length; i++) {
-        const sprint = features[i]?.sprint?.toUpperCase();
-        if (sprint === 'NOW') now++;
-        else if (sprint === 'NEXT') next++;
-      }
-    }
-    return { now, next };
-  }
+  }, [deleteHistoryItem]);
 
   const totalSessions = history.length;
   // Bolt optimization: Memoize aggregate stats computation in a single pass to eliminate redundant .reduce traversals on non-history state changes
@@ -203,86 +284,15 @@ export default function HistoryPage() {
 
             {/* Session Cards */}
             <div className={styles.historyList}>
-              {history.map((item) => {
-                const dateStr = item.createdAt
-                  ? new Date(item.createdAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : 'Recent';
-
-                // Bolt optimization: Single-pass sprint count retrieval without intermediate array allocations
-                const { now: nowCount, next: nextCount } = getSprintCounts(item.features);
-
-                return (
-                  <div key={item.id} className={`${styles.historyCard} glass-card`}>
-                    <div className={styles.cardTop}>
-                      <div>
-                        <div className={styles.sessionTitle}>{item.title}</div>
-                        <div className={styles.sessionMeta}>
-                          <span>📅 {dateStr}</span>
-                          <span>•</span>
-                          <span>🤖 {item.model || 'Multi-Provider AI'}</span>
-                        </div>
-                      </div>
-
-                      <div className={styles.pillsRow}>
-                        <span className={styles.pill}>{item.featureCount || item.features?.length || 0} Features</span>
-                        <span className="badge-now">{nowCount} NOW</span>
-                        <span className="badge-next">{nextCount} NEXT</span>
-                        <span className={styles.pill} style={{ borderColor: 'rgba(245, 158, 11, 0.3)', color: 'var(--primary-light)' }}>
-                          Top RICE: {item.topRice}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Features preview */}
-                    {item.features?.length > 0 && (
-                      <div className={styles.featurePreviewList}>
-                        {item.features.slice(0, 3).map((f) => (
-                          <div key={f.name} className={styles.previewItem}>
-                            <span className={styles.previewName}>{f.name}</span>
-                            <div className={styles.previewRight}>
-                              <span className={`badge-${(f.sprint || 'later').toLowerCase()}`}>
-                                {f.sprint || 'LATER'}
-                              </span>
-                              <span className={styles.previewScore}>{f.rice_score}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className={styles.cardActions}>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="btn-ghost"
-                        style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--danger)' }}
-                      >
-                        🗑️ Delete
-                      </button>
-                      <button
-                        onClick={() => handleExportCSV(item)}
-                        className="btn-ghost"
-                        style={{ padding: '6px 12px', fontSize: '12px' }}
-                      >
-                        ⬇ Export CSV
-                      </button>
-                      <button
-                        onClick={() => handleReopen(item)}
-                        className="btn-primary"
-                        style={{ padding: '6px 16px', fontSize: '13px' }}
-                      >
-                        🚀 Re-open Session →
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+              {history.map((item) => (
+                <HistoryCard
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
+                  onExportCSV={handleExportCSV}
+                  onReopen={handleReopen}
+                />
+              ))}
             </div>
           </>
         )}
