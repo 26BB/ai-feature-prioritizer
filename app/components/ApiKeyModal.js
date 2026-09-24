@@ -51,7 +51,11 @@ export default function ApiKeyModal({ isOpen, onClose }) {
   function handleSave() {
     if (typeof window !== 'undefined') {
       localStorage.setItem('priority_byok_provider', provider);
-      localStorage.setItem('priority_byok_key', apiKey.trim());
+      if (provider === 'auto') {
+        localStorage.removeItem('priority_byok_key');
+      } else {
+        localStorage.setItem('priority_byok_key', apiKey.trim());
+      }
       setSavedSuccess(true);
       setTimeout(() => {
         setSavedSuccess(false);
