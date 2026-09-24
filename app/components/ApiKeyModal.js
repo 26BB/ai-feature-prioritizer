@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './ApiKeyModal.module.css';
 
 export default function ApiKeyModal({ isOpen, onClose }) {
@@ -8,6 +8,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
   const [showKey, setShowKey] = useState(false);
   const [cacheCount, setCacheCount] = useState(0);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [cacheClearedSuccess, setCacheClearedSuccess] = useState(false);
+
+  const closeBtnRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -21,6 +24,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
       // Count cached items
       updateCacheCount();
     }
+
+    // Set initial focus to close button for keyboard/screen reader accessibility
+    closeBtnRef.current?.focus();
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -65,6 +71,10 @@ export default function ApiKeyModal({ isOpen, onClose }) {
       }
       keysToRemove.forEach((k) => localStorage.removeItem(k));
       updateCacheCount();
+      setCacheClearedSuccess(true);
+      setTimeout(() => {
+        setCacheClearedSuccess(false);
+      }, 1800);
     }
   }
 
@@ -82,6 +92,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
         <div className={styles.header}>
           <h3 id="settings-modal-title">⚙️ Settings & BYOK (Bring Your Own Key)</h3>
           <button
+            ref={closeBtnRef}
             className={styles.closeBtn}
             onClick={onClose}
             aria-label="Close settings modal"
@@ -168,6 +179,11 @@ export default function ApiKeyModal({ isOpen, onClose }) {
           {savedSuccess && (
             <span className={styles.savedBadge} role="status" aria-live="polite">
               ✅ Saved!
+            </span>
+          )}
+          {cacheClearedSuccess && (
+            <span className={styles.savedBadge} role="status" aria-live="polite">
+              ⚡ Cache Cleared!
             </span>
           )}
           <button className={styles.saveBtn} onClick={handleSave}>
