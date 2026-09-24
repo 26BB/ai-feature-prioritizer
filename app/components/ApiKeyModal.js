@@ -167,6 +167,8 @@ export default function ApiKeyModal({ isOpen, onClose }) {
               type="button"
               onClick={handleClearCache}
               disabled={cacheCount === 0}
+              aria-disabled={cacheCount === 0}
+              aria-label="Clear client-side response cache"
               className={styles.clearCacheBtn}
               title={cacheCount === 0 ? 'No cached items to clear' : 'Clear cached response items'}
             >
