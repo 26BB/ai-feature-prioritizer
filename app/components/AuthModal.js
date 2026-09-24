@@ -102,7 +102,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         aria-modal="true"
         aria-labelledby="auth-modal-title"
       >
-        <button onClick={onClose} className={styles.closeBtn} aria-label="Close modal">
+        <button
+          onClick={onClose}
+          className={styles.closeBtn}
+          aria-label="Close authentication modal"
+          title="Close authentication modal"
+        >
           ✕
         </button>
 

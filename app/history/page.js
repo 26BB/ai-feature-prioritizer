@@ -81,6 +81,8 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
           onClick={() => onDelete(item.id)}
           className="btn-ghost"
           style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--danger)' }}
+          aria-label={`Delete prioritization session ${item.title}`}
+          title="Delete session"
         >
           🗑️ Delete
         </button>
@@ -207,8 +209,8 @@ export default function HistoryPage() {
               <button
                 onClick={logout}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: '4px' }}
-                title="Sign Out"
-                aria-label="Sign Out"
+                title="Sign out of account"
+                aria-label="Sign out of account"
               >
                 🚪
               </button>

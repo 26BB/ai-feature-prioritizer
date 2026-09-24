@@ -96,6 +96,7 @@ export default function ApiKeyModal({ isOpen, onClose }) {
             className={styles.closeBtn}
             onClick={onClose}
             aria-label="Close settings modal"
+            title="Close settings modal"
           >
             ✕
           </button>
