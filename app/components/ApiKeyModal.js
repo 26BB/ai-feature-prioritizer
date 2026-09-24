@@ -38,13 +38,10 @@ export default function ApiKeyModal({ isOpen, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Bolt optimization: Use Object.keys(localStorage) to replace O(N^2) localStorage.key(i) lookups with O(N) linear array filter
   function updateCacheCount() {
-    let count = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      if (localStorage.key(i)?.startsWith('rice_cache_')) {
-        count++;
-      }
-    }
+    if (typeof window === 'undefined') return;
+    const count = Object.keys(localStorage).filter((k) => k.startsWith('rice_cache_')).length;
     setCacheCount(count);
   }
 
@@ -62,14 +59,9 @@ export default function ApiKeyModal({ isOpen, onClose }) {
 
   function handleClearCache() {
     if (typeof window !== 'undefined') {
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key?.startsWith('rice_cache_')) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach((k) => localStorage.removeItem(k));
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('rice_cache_'))
+        .forEach((k) => localStorage.removeItem(k));
       updateCacheCount();
       setCacheClearedSuccess(true);
       setTimeout(() => {
