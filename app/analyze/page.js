@@ -177,7 +177,7 @@ export default function AnalyzePage() {
 
     try {
       const userProvider = localStorage.getItem('priority_byok_provider') || 'auto';
-      const userApiKey = localStorage.getItem('priority_byok_key') || '';
+      const userApiKey = userProvider !== 'auto' ? (localStorage.getItem('priority_byok_key') || '') : '';
 
       const res = await fetch('/api/prioritize', {
         method: 'POST',
