@@ -49,6 +49,7 @@ const FeatureCard = memo(function FeatureCard({
             onClick={() => onRemove(idx)}
             className={styles.removeBtn}
             aria-label={`Remove feature ${idx + 1}`}
+            title={`Remove feature ${idx + 1}`}
           >
             ✕
           </button>
