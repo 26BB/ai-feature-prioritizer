@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import styles from './ApiKeyModal.module.css';
 
-export default function ApiKeyModal({ isOpen, onClose }) {
+// Bolt optimization: Memoized ApiKeyModal prevents re-evaluating modal markup and hooks on parent state updates when modal is closed
+const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
   const [provider, setProvider] = useState('auto');
   const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
@@ -70,7 +71,8 @@ export default function ApiKeyModal({ isOpen, onClose }) {
         }
       }
       keysToRemove.forEach((k) => localStorage.removeItem(k));
-      updateCacheCount();
+      // Bolt optimization: Directly set count to 0 instead of running O(N) localStorage scan
+      setCacheCount(0);
       setCacheClearedSuccess(true);
       setTimeout(() => {
         setCacheClearedSuccess(false);
@@ -196,4 +198,6 @@ export default function ApiKeyModal({ isOpen, onClose }) {
       </div>
     </div>
   );
-}
+});
+
+export default ApiKeyModal;
