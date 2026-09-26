@@ -135,6 +135,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isSubmitting}
+          aria-busy={isSubmitting}
           className={styles.googleBtn}
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -155,7 +156,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
               d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"
             />
           </svg>
-          <span>Continue with Google</span>
+          <span>{isSubmitting ? 'Signing in...' : 'Continue with Google'}</span>
         </button>
 
         <div className={styles.divider}>
@@ -195,7 +196,13 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         {/* Email / Password Form */}
-        <form id="auth-form" onSubmit={handleSubmit} className={styles.form}>
+        <form
+          id="auth-form"
+          role="tabpanel"
+          aria-labelledby={mode === 'login' ? 'auth-tab-login' : 'auth-tab-signup'}
+          onSubmit={handleSubmit}
+          className={styles.form}
+        >
           {mode === 'signup' && (
             <div className={styles.fieldGroup}>
               <label htmlFor="auth-name" className={styles.label}>
@@ -242,7 +249,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
             />
           </div>
 
-          {errorMsg && <div className={styles.errorBanner}>⚠ {errorMsg}</div>}
+          {errorMsg && <div className={styles.errorBanner} role="alert">⚠ {errorMsg}</div>}
 
           <button
             type="submit"
