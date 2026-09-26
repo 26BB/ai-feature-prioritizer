@@ -113,13 +113,26 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Security: Input validation & sanitization helper for user email and displayName
+  const validateAuthInputs = (email, displayName) => {
+    const cleanEmail = typeof email === 'string' ? email.trim() : '';
+    if (!cleanEmail || cleanEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      throw new Error('Please enter a valid email address.');
+    }
+    if (displayName && (typeof displayName !== 'string' || displayName.trim().length > 100)) {
+      throw new Error('Display name must not exceed 100 characters.');
+    }
+    return cleanEmail;
+  };
+
   const loginWithEmail = useCallback(async (email, password) => {
     if (!email || !password) {
       throw new Error('Please fill in both email and password.');
     }
+    const cleanEmail = validateAuthInputs(email);
 
     if (isFirebaseConfigured && auth) {
-      const creds = await signInWithEmailAndPassword(auth, email, password);
+      const creds = await signInWithEmailAndPassword(auth, cleanEmail, password);
       const u = creds.user;
       const formatted = {
         uid: u.uid,
@@ -132,9 +145,9 @@ export function AuthProvider({ children }) {
     } else {
       // Demo Email login
       const mockUser = {
-        uid: 'demo_user_' + hashString(email),
-        email,
-        displayName: email.split('@')[0],
+        uid: 'demo_user_' + hashString(cleanEmail),
+        email: cleanEmail,
+        displayName: cleanEmail.split('@')[0],
         photoURL: null,
         providerId: 'password',
       };
@@ -153,13 +166,15 @@ export function AuthProvider({ children }) {
     if (password.length < 6) {
       throw new Error('Password must be at least 6 characters.');
     }
+    const cleanEmail = validateAuthInputs(email, displayName);
+    const cleanDisplayName = displayName ? displayName.trim() : '';
 
     if (isFirebaseConfigured && auth) {
-      const creds = await createUserWithEmailAndPassword(auth, email, password);
+      const creds = await createUserWithEmailAndPassword(auth, cleanEmail, password);
       const u = creds.user;
-      if (displayName) {
+      if (cleanDisplayName) {
         try {
-          await updateProfile(u, { displayName });
+          await updateProfile(u, { displayName: cleanDisplayName });
         } catch {
           // ignore profile update error
         }
@@ -167,7 +182,7 @@ export function AuthProvider({ children }) {
       const formatted = {
         uid: u.uid,
         email: u.email,
-        displayName: displayName || u.displayName || u.email?.split('@')[0],
+        displayName: cleanDisplayName || u.displayName || u.email?.split('@')[0],
         photoURL: u.photoURL,
       };
       setUser(formatted);
@@ -175,9 +190,9 @@ export function AuthProvider({ children }) {
     } else {
       // Demo Email signup
       const mockUser = {
-        uid: 'demo_user_' + hashString(email),
-        email,
-        displayName: displayName || email.split('@')[0],
+        uid: 'demo_user_' + hashString(cleanEmail),
+        email: cleanEmail,
+        displayName: cleanDisplayName || cleanEmail.split('@')[0],
         photoURL: null,
         providerId: 'password',
       };
