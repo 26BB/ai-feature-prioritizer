@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './AuthModal.module.css';
 
-export default function AuthModal({ isOpen, onClose, onSuccess }) {
+// Bolt optimization: Memoized AuthModal prevents re-evaluating modal markup and hooks on parent state updates when modal is closed
+const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
   const { isDemoMode, signInWithGoogle, loginWithEmail, signupWithEmail } = useAuth();
 
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
@@ -261,4 +262,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       </div>
     </div>
   );
-}
+});
+
+export default AuthModal;

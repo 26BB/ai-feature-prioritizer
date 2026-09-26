@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -15,13 +15,17 @@ export default function LandingHome() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for ApiKeyModal and AuthModal
+  const handleCloseApiKeyModal = useCallback(() => setIsModalOpen(false), []);
+  const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+
   return (
     <div className={styles.landingPage}>
       <div className="bg-pattern" />
 
       {/* Settings & Auth Modals */}
-      <ApiKeyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <ApiKeyModal isOpen={isModalOpen} onClose={handleCloseApiKeyModal} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} />
 
       {/* ── Navbar ── */}
       <nav className="navbar">

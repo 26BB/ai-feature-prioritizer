@@ -117,6 +117,10 @@ export default function AnalyzePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for ApiKeyModal and AuthModal
+  const handleCloseApiKeyModal = useCallback(() => setIsModalOpen(false), []);
+  const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+
   function addFeature() {
     if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
   }
@@ -251,8 +255,8 @@ export default function AnalyzePage() {
     <div className={styles.page}>
       <div className="bg-pattern" />
 
-      <ApiKeyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <ApiKeyModal isOpen={isModalOpen} onClose={handleCloseApiKeyModal} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} />
 
       {/* ── Navbar ── */}
       <nav className="navbar">

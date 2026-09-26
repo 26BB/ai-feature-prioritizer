@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useMemo, memo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -306,8 +306,11 @@ export default function Results() {
     URL.revokeObjectURL(url);
   }
 
+  // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for AuthModal
+  const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+
   // ─── Save session to history ─────────────────────────────────────────────
-  async function handleSaveToHistory() {
+  const handleSaveToHistory = useCallback(async () => {
     if (!user) {
       setIsAuthModalOpen(true);
       return;
@@ -320,7 +323,7 @@ export default function Results() {
       console.error('Failed to save session:', err);
       setSaveStatus('error');
     }
-  }
+  }, [user, data, saveSessionToHistory]);
 
   // ─── Derived data (Bolt optimization: memoized to prevent recalculation on tab switches / re-renders) ───
   const groups = useMemo(() => (data ? groupBySprint(data.features) : { NOW: [], NEXT: [], LATER: [] }), [data]);
@@ -343,8 +346,8 @@ export default function Results() {
 
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={() => handleSaveToHistory()}
+        onClose={handleCloseAuthModal}
+        onSuccess={handleSaveToHistory}
       />
 
       {/* ── Navbar ── */}

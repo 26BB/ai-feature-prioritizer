@@ -113,6 +113,9 @@ export default function HistoryPage() {
   const [fetching, setFetching] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Bolt optimization: Stable useCallback modal handler preserves React.memo equality for AuthModal
+  const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+
   useEffect(() => {
     async function loadHistory() {
       if (user) {
@@ -188,7 +191,7 @@ export default function HistoryPage() {
     <div className={styles.page}>
       <div className="bg-pattern" />
 
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} />
 
       {/* ── Navbar ── */}
       <nav className="navbar">
