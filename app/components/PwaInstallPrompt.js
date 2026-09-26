@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import styles from './PwaInstallPrompt.module.css';
 
-export default function PwaInstallPrompt() {
+// Bolt optimization: Memoized PwaInstallPrompt prevents unnecessary re-evaluations during AuthProvider or root layout state changes
+const PwaInstallPrompt = memo(function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isIos, setIsIos] = useState(false);
@@ -135,4 +136,6 @@ export default function PwaInstallPrompt() {
       )}
     </aside>
   );
-}
+});
+
+export default PwaInstallPrompt;
