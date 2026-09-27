@@ -9,3 +9,7 @@
 ## 2025-05-20 - Inline Callbacks Defeat React.memo on Closed Modal Components During Keystrokes
 **Learning:** Even when modal components (`ApiKeyModal`, `AuthModal`) are wrapped in `React.memo`, passing inline functions like `onClose={() => setIsModalOpen(false)}` creates new function references on every parent state update (such as typing in form fields). This forces React to re-evaluate closed modal components on every keystroke. Wrapping modal close handlers in `useCallback` preserves reference equality and allows `React.memo` to skip closed modal function calls entirely.
 **Action:** Pair `React.memo` on modal components with `useCallback` handlers in parent components to prevent unnecessary re-evaluations during high-frequency parent state changes.
+
+## 2025-05-21 - Index Keys Defeat React.memo in Dynamic Lists During Item Operations
+**Learning:** Using array indices as `key` props (`key={idx}`) in dynamic lists defeats `React.memo` optimization when items are added or removed, because index shifts cause remaining items to receive new key-index associations and force full component re-renders. Assigning a stable `id` property on item creation and using `key={item.id}` enables `React.memo` to skip re-renders for unchanged list items during removals/insertions.
+**Action:** Always assign a unique, stable `id` to dynamic list items and use `key={item.id}` instead of array indices when list items are wrapped in `React.memo`.

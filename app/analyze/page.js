@@ -16,7 +16,13 @@ const LOADING_STEPS = [
   'Preparing visualizations...',
 ];
 
-const makeEmptyFeature = () => ({ name: '', description: '', category: 'AI/ML' });
+let featureIdCounter = 0;
+const makeEmptyFeature = () => ({
+  id: `f_${Date.now()}_${++featureIdCounter}_${Math.random().toString(36).substring(2, 7)}`,
+  name: '',
+  description: '',
+  category: 'AI/ML',
+});
 
 function generateCacheKey(features) {
   const serialized = features
@@ -261,7 +267,11 @@ export default function AnalyzePage() {
     );
   }
 
-  const filledCount = features.filter((f) => f.name.trim()).length;
+  // Bolt optimization: Single-pass O(N) loop avoids creating intermediate array allocations (.filter) on every keystroke
+  let filledCount = 0;
+  for (let i = 0; i < features.length; i++) {
+    if (features[i].name.trim()) filledCount++;
+  }
 
   return (
     <div className={styles.page}>
@@ -334,9 +344,10 @@ export default function AnalyzePage() {
           </div>
 
           <div className={styles.featureList}>
+            {/* Bolt optimization: Using stable feature.id keys instead of index keys preserves React.memo reference equality during list additions/removals */}
             {features.map((feature, idx) => (
               <FeatureCard
-                key={idx}
+                key={feature.id}
                 idx={idx}
                 feature={feature}
                 canRemove={features.length > 1}
