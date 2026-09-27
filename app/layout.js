@@ -1,4 +1,5 @@
 import { Playfair_Display, Space_Mono, Plus_Jakarta_Sans } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import PwaInstallPrompt from './components/PwaInstallPrompt';
 import { AuthProvider } from '@/context/AuthContext';
@@ -66,6 +67,15 @@ export default function RootLayout({ children }) {
           {children}
           <PwaInstallPrompt />
         </AuthProvider>
+        <Script id="feedback-widget-config" strategy="afterInteractive">
+          {`
+            window.FEEDBACK_CONFIG = {
+              projectName: "PriorityAI (Feature Prioritizer)",
+              webhookUrl: "https://script.google.com/macros/s/AKfycb.../exec"
+            };
+          `}
+        </Script>
+        <Script src="/feedback_widget.js" strategy="afterInteractive" />
       </body>
     </html>
   );
