@@ -57,13 +57,25 @@ const FeatureCard = memo(function FeatureCard({
       </div>
 
       <div className={styles.fieldGroup}>
-        <label htmlFor={`name-${idx}`} className={styles.fieldLabel}>Feature Name *</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label htmlFor={`name-${idx}`} className={styles.fieldLabel}>Feature Name *</label>
+          <span
+            id={`name-count-${idx}`}
+            style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}
+          >
+            {(feature.name || '').length}/100
+          </span>
+        </div>
         <input
           id={`name-${idx}`}
           className="input-field"
           placeholder="e.g. AI Auto-complete for search"
           value={feature.name}
           onChange={(e) => onUpdate(idx, 'name', e.target.value)}
+          maxLength={100}
+          required
+          aria-required="true"
+          aria-describedby={`name-count-${idx}`}
         />
       </div>
 
