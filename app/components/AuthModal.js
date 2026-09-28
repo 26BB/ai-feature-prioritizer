@@ -15,6 +15,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const closeBtnRef = useRef(null);
   const loginTabRef = useRef(null);
   const signupTabRef = useRef(null);
 
@@ -39,6 +40,8 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
     setDisplayName('');
 
     if (!isOpen) return;
+
+    closeBtnRef.current?.focus();
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -104,6 +107,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
         aria-labelledby="auth-modal-title"
       >
         <button
+          ref={closeBtnRef}
           onClick={onClose}
           className={styles.closeBtn}
           aria-label="Close authentication modal"
@@ -254,6 +258,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
           <button
             type="submit"
             disabled={isSubmitting}
+            aria-busy={isSubmitting}
             className={`btn-primary ${styles.submitBtn}`}
           >
             {isSubmitting ? 'Processing...' : mode === 'login' ? 'Sign In →' : 'Create Account →'}
