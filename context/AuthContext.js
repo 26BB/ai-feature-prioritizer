@@ -296,6 +296,12 @@ export function AuthProvider({ children }) {
   const deleteHistoryItem = useCallback(async (id) => {
     if (!user) return;
 
+    // Security: Validate history document ID to prevent Firestore path traversal attacks (CWE-22 / CWE-352)
+    if (typeof id !== 'string' || !id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+      console.warn('[PriorityAI Auth] Invalid or potentially malicious history document ID rejected:', id);
+      return;
+    }
+
     if (isFirebaseConfigured && db) {
       const docRef = doc(db, 'users', user.uid, 'history', id);
       await deleteDoc(docRef);
