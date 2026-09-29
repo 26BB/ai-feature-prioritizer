@@ -15,6 +15,8 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const closeBtnRef = useRef(null);
+  const modalRef = useRef(null);
   const loginTabRef = useRef(null);
   const signupTabRef = useRef(null);
 
@@ -31,24 +33,57 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
-  // Reset state when modal opens or mode changes & add Escape key listener
+  // Reset form errors/inputs when mode changes or modal opens
   useEffect(() => {
     setErrorMsg('');
     setEmail('');
     setPassword('');
     setDisplayName('');
+  }, [isOpen, mode]);
 
+  // Modal open/close lifecycle: manage focus trap, escape key, and focus restoration
+  useEffect(() => {
     if (!isOpen) return;
+
+    const previousActiveElement = document.activeElement;
+    closeBtnRef.current?.focus();
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusables = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, mode, onClose]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
+      }
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -97,6 +132,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div
+        ref={modalRef}
         className={styles.modal}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -104,6 +140,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
         aria-labelledby="auth-modal-title"
       >
         <button
+          ref={closeBtnRef}
           onClick={onClose}
           className={styles.closeBtn}
           aria-label="Close authentication modal"

@@ -12,9 +12,12 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
   const [cacheClearedSuccess, setCacheClearedSuccess] = useState(false);
 
   const closeBtnRef = useRef(null);
+  const modalCardRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) return;
+
+    const previousActiveElement = document.activeElement;
 
     if (typeof window !== 'undefined') {
       const storedProvider = localStorage.getItem('priority_byok_provider') || 'auto';
@@ -32,11 +35,38 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalCardRef.current) {
+        const focusables = modalCardRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
+      }
+    };
   }, [isOpen, onClose]);
 
   function updateCacheCount() {
@@ -89,6 +119,7 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div
+        ref={modalCardRef}
         className={styles.modalCard}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
