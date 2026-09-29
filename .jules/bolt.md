@@ -13,3 +13,7 @@
 ## 2025-05-21 - Index Keys Defeat React.memo in Dynamic Lists During Item Operations
 **Learning:** Using array indices as `key` props (`key={idx}`) in dynamic lists defeats `React.memo` optimization when items are added or removed, because index shifts cause remaining items to receive new key-index associations and force full component re-renders. Assigning a stable `id` property on item creation and using `key={item.id}` enables `React.memo` to skip re-renders for unchanged list items during removals/insertions.
 **Action:** Always assign a unique, stable `id` to dynamic list items and use `key={item.id}` instead of array indices when list items are wrapped in `React.memo`.
+
+## 2025-05-22 - Converting Dynamic Imports to Static Imports Inflates Route Bundle Size
+**Learning:** Converting dynamically imported client libraries (e.g., `chart.js` loaded inside `useEffect` on tab activation) into static top-level imports defeats Next.js route code-splitting, inflating initial JavaScript bundle size and degrading LCP/TBT metrics for all visitors to the route.
+**Action:** Keep heavy visualization and chart libraries dynamically loaded or code-split unless required on initial page render.

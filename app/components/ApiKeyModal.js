@@ -69,10 +69,13 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
     };
   }, [isOpen, onClose]);
 
+  // Bolt optimization: Single O(N) pass using Object.keys(localStorage) avoids O(N²) index lookup traversals with localStorage.key(i)
   function updateCacheCount() {
+    if (typeof window === 'undefined') return;
+    const keys = Object.keys(localStorage);
     let count = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      if (localStorage.key(i)?.startsWith('rice_cache_')) {
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].startsWith('rice_cache_')) {
         count++;
       }
     }
@@ -95,16 +98,15 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
     }
   }
 
+  // Bolt optimization: Direct removal in single O(N) pass avoids intermediate key array allocation & O(N²) key indexing
   function handleClearCache() {
     if (typeof window !== 'undefined') {
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key?.startsWith('rice_cache_')) {
-          keysToRemove.push(key);
+      const keys = Object.keys(localStorage);
+      for (let i = 0; i < keys.length; i++) {
+        if (keys[i].startsWith('rice_cache_')) {
+          localStorage.removeItem(keys[i]);
         }
       }
-      keysToRemove.forEach((k) => localStorage.removeItem(k));
       // Bolt optimization: Directly set count to 0 instead of running O(N) localStorage scan
       setCacheCount(0);
       setCacheClearedSuccess(true);
