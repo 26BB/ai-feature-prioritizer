@@ -291,6 +291,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
           <button
             type="submit"
             disabled={isSubmitting}
+            aria-busy={isSubmitting}
             className={`btn-primary ${styles.submitBtn}`}
           >
             {isSubmitting ? 'Processing...' : mode === 'login' ? 'Sign In →' : 'Create Account →'}
