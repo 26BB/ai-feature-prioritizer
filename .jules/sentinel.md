@@ -12,3 +12,8 @@
 **Vulnerability:** Unsanitized document IDs passed to `doc(db, 'users', uid, 'history', id)` allowed relative path sequences (`..`), enabling path traversal outside the user's `history` subcollection and unauthorized document deletion.
 **Learning:** Firestore `doc()` parses path strings and interprets `/` and `..` relative path segments, allowing callers to escape subcollections if document IDs are not strictly validated.
 **Prevention:** Validate that document ID parameters strictly match expected alphanumeric format (e.g., `/^[a-zA-Z0-9_-]+$/`) before constructing Firestore document references.
+
+## 2025-05-21 - Unbounded In-Memory Client Cache DoS & Credential Retention
+**Vulnerability:** Dynamic LLM client instances were cached in a global `Map` keyed by `${baseURL}:${apiKey}` without size limits or eviction policy, allowing callers sending unique `x-api-key` headers to cause heap memory exhaustion DoS and retain sensitive BYOK keys indefinitely in process memory.
+**Learning:** Caching objects keyed by untrusted user headers in global maps creates an unbounded memory growth vector (CWE-400) and leads to long-term credential retention in process heap memory.
+**Prevention:** Bound all module-level caches with explicit capacity limits and FIFO/LRU eviction policies to prevent memory leaks and ensure credential eviction.
