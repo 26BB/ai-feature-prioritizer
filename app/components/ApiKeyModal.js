@@ -190,7 +190,9 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
                   {showKey ? '🙈' : '👁️'}
                 </button>
               </div>
-              <span className={styles.subtext}>\n                Keys are stored locally in your browser and never saved on our server.\n              </span>
+              <span className={styles.subtext}>
+                Keys are stored locally in your browser and never saved on our server.
+              </span>
             </div>
           )}
 
