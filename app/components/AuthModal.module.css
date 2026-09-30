@@ -186,6 +186,34 @@
   color: var(--text-secondary);
 }
 
+.passwordInputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.passwordInputWrapper input {
+  flex: 1;
+}
+
+.toggleShowBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toggleShowBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+}
+
 .submitBtn {
   margin-top: 6px;
   width: 100%;
