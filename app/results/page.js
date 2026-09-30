@@ -159,7 +159,8 @@ export default function Results() {
   const chartInstance             = useRef(null);
   const tabRefs                   = useRef([]);
 
-  const handleTabKeyDown = (e, index) => {
+  // Bolt optimization: Stable useCallback tab keyboard handler avoids recreating function reference on state changes
+  const handleTabKeyDown = useCallback((e, index) => {
     let newIndex = index;
     if (e.key === 'ArrowRight') {
       newIndex = (index + 1) % TABS.length;
@@ -175,7 +176,7 @@ export default function Results() {
     e.preventDefault();
     setActiveTab(newIndex);
     tabRefs.current[newIndex]?.focus();
-  };
+  }, []);
 
 
   // ─── Load results from sessionStorage on mount (ensures SSR hydration safety) ───
@@ -282,8 +283,8 @@ export default function Results() {
     };
   }, [activeTab, data]);
 
-  // ─── CSV export (no deps — uses native Blob + URL API) ──────────────────
-  function exportCSV() {
+  // ─── CSV export (Bolt optimization: memoized callback preserves function identity across tab switches & status updates) ───
+  const exportCSV = useCallback(() => {
     if (!data) return;
 
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
@@ -304,7 +305,7 @@ export default function Results() {
     const link = Object.assign(document.createElement('a'), { href: url, download: 'priority-ai-results.csv' });
     link.click();
     URL.revokeObjectURL(url);
-  }
+  }, [data]);
 
   // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for AuthModal
   const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
@@ -444,11 +445,11 @@ export default function Results() {
       <main className={styles.main}>
         <div className="container">
 
-          {/* Tab 0 — Score Cards */}
+          {/* Tab 0 — Score Cards (Bolt optimization: composite keys eliminate key collision re-renders) */}
           {activeTab === 0 && (
             <div id="tabpanel-0" role="tabpanel" aria-labelledby="tab-0" className={styles.cardsGrid}>
               {data.features.map((f, i) => (
-                <ScoreCard key={f.name} feature={f} index={i} />
+                <ScoreCard key={f.id || `${f.name}_${i}`} feature={f} index={i} />
               ))}
             </div>
           )}
@@ -487,8 +488,8 @@ export default function Results() {
                     {groups[key].length === 0 ? (
                       <div className={styles.emptyLane}>No features in this sprint</div>
                     ) : (
-                      groups[key].map((f) => (
-                        <RoadmapCard key={f.name} feature={f} />
+                      groups[key].map((f, i) => (
+                        <RoadmapCard key={f.id || `${f.name}_${i}`} feature={f} />
                       ))
                     )}
                   </div>
