@@ -82,7 +82,7 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
           className="btn-ghost"
           style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--danger)' }}
           aria-label={`Delete prioritization session ${item.title}`}
-          title="Delete session"
+          title={`Delete session ${item.title}`}
         >
           🗑️ Delete
         </button>
@@ -90,6 +90,8 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
           onClick={() => onExportCSV(item)}
           className="btn-ghost"
           style={{ padding: '6px 12px', fontSize: '12px' }}
+          aria-label={`Export CSV for prioritization session ${item.title}`}
+          title={`Export CSV for ${item.title}`}
         >
           ⬇ Export CSV
         </button>
@@ -97,6 +99,8 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
           onClick={() => onReopen(item)}
           className="btn-primary"
           style={{ padding: '6px 16px', fontSize: '13px' }}
+          aria-label={`Re-open prioritization session ${item.title}`}
+          title={`Re-open session ${item.title}`}
         >
           🚀 Re-open Session →
         </button>
@@ -200,7 +204,13 @@ export default function HistoryPage() {
           <span className={styles.logoText}>PriorityAI</span>
         </Link>
         <div className={styles.navRight}>
-          <button onClick={() => router.push('/')} className="btn-ghost" style={{ fontSize: '13px', padding: '6px 14px' }}>
+          <button
+            onClick={() => router.push('/')}
+            className="btn-ghost"
+            style={{ fontSize: '13px', padding: '6px 14px' }}
+            aria-label="Return to Dashboard home page"
+            title="Return to Dashboard"
+          >
             ← Dashboard
           </button>
           {user ? (
@@ -289,15 +299,7 @@ export default function HistoryPage() {
 
             {/* Session Cards */}
             <div className={styles.historyList}>
-              {history.map((item) => (
-                <HistoryCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
-                  onExportCSV={handleExportCSV}
-                  onReopen={handleReopen}
-                />
-              ))}
+              {history.map((item) => (\n                <HistoryCard\n                  key={item.id}\n                  item={item}\n                  onDelete={handleDelete}\n                  onExportCSV={handleExportCSV}\n                  onReopen={handleReopen}\n                />\n              ))}
             </div>
           </>
         )}

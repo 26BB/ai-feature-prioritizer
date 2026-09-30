@@ -373,10 +373,28 @@ export default function Results() {
             className="btn-primary"
             style={{ padding: '6px 14px', fontSize: '13px' }}
             disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+            aria-label={
+              saveStatus === 'saving'
+                ? 'Saving session to history'
+                : saveStatus === 'saved'
+                ? 'Session saved to history'
+                : 'Save prioritization session to history'
+            }
+            title={
+              saveStatus === 'saved'
+                ? 'Session saved to history'
+                : 'Save prioritization session to history'
+            }
           >
             {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : '💾 Save History'}
           </button>
-          <button onClick={exportCSV} className="btn-ghost" style={{ padding: '6px 14px', fontSize: '13px' }}>
+          <button
+            onClick={exportCSV}
+            className="btn-ghost"
+            style={{ padding: '6px 14px', fontSize: '13px' }}
+            aria-label="Export results as CSV file"
+            title="Export results as CSV file"
+          >
             ⬇ CSV
           </button>
         </div>
@@ -478,8 +496,22 @@ export default function Results() {
               ))}
 
               <div className={styles.roadmapActions}>
-                <button onClick={exportCSV} className="btn-primary">⬇ Export CSV</button>
-                <button onClick={() => router.push('/')} className="btn-ghost">← New Analysis</button>
+                <button
+                  onClick={exportCSV}
+                  className="btn-primary"
+                  aria-label="Export roadmap results as CSV file"
+                  title="Export roadmap results as CSV file"
+                >
+                  ⬇ Export CSV
+                </button>
+                <button
+                  onClick={() => router.push('/')}
+                  className="btn-ghost"
+                  aria-label="Start a new feature analysis"
+                  title="Start a new feature analysis"
+                >
+                  ← New Analysis
+                </button>
               </div>
             </div>
           )}
