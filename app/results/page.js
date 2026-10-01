@@ -282,8 +282,8 @@ export default function Results() {
     };
   }, [activeTab, data]);
 
-  // ─── CSV export (no deps — uses native Blob + URL API) ──────────────────
-  function exportCSV() {
+  // ─── CSV export (Bolt optimization: memoized callback preserves function reference across tab toggles and save state transitions) ───
+  const exportCSV = useCallback(() => {
     if (!data) return;
 
     const headers = ['Feature', 'RICE Score', 'Sprint', 'Reach', 'Impact', 'Confidence', 'Effort', 'Reasoning'];
@@ -304,7 +304,7 @@ export default function Results() {
     const link = Object.assign(document.createElement('a'), { href: url, download: 'priority-ai-results.csv' });
     link.click();
     URL.revokeObjectURL(url);
-  }
+  }, [data]);
 
   // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for AuthModal
   const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
