@@ -299,7 +299,15 @@ export default function HistoryPage() {
 
             {/* Session Cards */}
             <div className={styles.historyList}>
-              {history.map((item) => (\n                <HistoryCard\n                  key={item.id}\n                  item={item}\n                  onDelete={handleDelete}\n                  onExportCSV={handleExportCSV}\n                  onReopen={handleReopen}\n                />\n              ))}
+              {history.map((item) => (
+                <HistoryCard
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
+                  onExportCSV={handleExportCSV}
+                  onReopen={handleReopen}
+                />
+              ))}
             </div>
           </>
         )}
