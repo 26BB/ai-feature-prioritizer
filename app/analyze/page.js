@@ -114,6 +114,7 @@ const FeatureCard = memo(function FeatureCard({
           className="input-field"
           value={feature.category}
           onChange={(e) => onUpdate(idx, 'category', e.target.value)}
+          aria-label={`Category for feature ${idx + 1}`}
         >
           {CATEGORIES.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
@@ -246,7 +247,7 @@ export default function AnalyzePage() {
           <h2>Analyzing Your Features</h2>
           <p className={styles.loadingSubtitle}>Powered by Multi-Provider AI & Failover Engine</p>
 
-          <div className={styles.steps}>
+          <div className={styles.steps} role="status" aria-live="polite">
             {LOADING_STEPS.map((label, i) => (
               <div
                 key={label}
