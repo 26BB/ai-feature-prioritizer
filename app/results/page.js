@@ -186,7 +186,12 @@ export default function Results() {
       return;
     }
     try {
-      setData(JSON.parse(raw));
+      const parsed = JSON.parse(raw);
+      // Security: Validate schema structure to prevent component crashes/state tampering from malformed web storage
+      if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.features)) {
+        throw new Error('Invalid session data structure');
+      }
+      setData(parsed);
     } catch {
       // Corrupt sessionStorage data — send user back to start
       sessionStorage.removeItem('priorityResults');

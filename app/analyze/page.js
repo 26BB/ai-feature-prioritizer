@@ -178,6 +178,10 @@ export default function AnalyzePage() {
       if (cached) {
         try {
           const parsedCache = JSON.parse(cached);
+          // Security: Validate schema structure of cached data before using
+          if (!parsedCache || typeof parsedCache !== 'object' || !Array.isArray(parsedCache.features)) {
+            throw new Error('Invalid cache structure');
+          }
           sessionStorage.setItem('priorityResults', JSON.stringify({ ...parsedCache, isCached: true }));
           router.push('/results');
           return;
