@@ -320,10 +320,12 @@ export default function AnalyzePage() {
           )}
           <button
             onClick={handleResetForm}
-            className="btn-primary"
+            className="btn-ghost"
             style={{ padding: '8px 18px', fontSize: '13px' }}
+            aria-label="Reset workspace feature inputs"
+            title="Clear all feature inputs in workspace"
           >
-            + Reset Form
+            🔄 Reset Form
           </button>
         </div>
       </nav>
@@ -363,11 +365,29 @@ export default function AnalyzePage() {
           </div>
 
           <div className={styles.actions}>
-            {features.length < 10 && (
-              <button onClick={addFeature} className="btn-secondary" style={{ width: '100%' }}>
-                + Add Another Feature ({features.length}/10)
-              </button>
-            )}
+            <button
+              onClick={addFeature}
+              disabled={features.length >= 10}
+              className={`btn-secondary ${features.length >= 10 ? styles.disabledFeatureBtn : ''}`}
+              style={{
+                width: '100%',
+                cursor: features.length >= 10 ? 'not-allowed' : 'pointer',
+              }}
+              title={
+                features.length >= 10
+                  ? 'Maximum limit of 10 features reached per analysis'
+                  : 'Add another feature card to workspace'
+              }
+              aria-label={
+                features.length >= 10
+                  ? 'Maximum limit of 10 features reached'
+                  : `Add feature ${features.length + 1}`
+              }
+            >
+              {features.length >= 10
+                ? '✓ Maximum 10 Features Reached'
+                : `+ Add Another Feature (${features.length}/10)`}
+            </button>
 
             {error && <div className={styles.errorMsg} role="alert">⚠️ {error}</div>}
 
