@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, useRef, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -132,16 +132,34 @@ export default function AnalyzePage() {
   const [features, setFeatures] = useState([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const pendingFocusIndexRef = useRef(null);
 
   // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for ApiKeyModal and AuthModal
   const handleCloseApiKeyModal = useCallback(() => setIsModalOpen(false), []);
   const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
+  useEffect(() => {
+    if (pendingFocusIndexRef.current !== null) {
+      const targetIdx = pendingFocusIndexRef.current;
+      pendingFocusIndexRef.current = null;
+      const targetInput = document.getElementById(`name-${targetIdx}`);
+      if (targetInput) {
+        targetInput.focus();
+      }
+    }
+  }, [features.length]);
+
   function addFeature() {
-    if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
+    if (features.length < 10) {
+      pendingFocusIndexRef.current = features.length;
+      setFeatures((prev) => [...prev, makeEmptyFeature()]);
+      setStatusMessage(`Feature ${features.length + 1} added.`);
+    }
   }
 
   function handleResetForm() {
@@ -156,7 +174,13 @@ export default function AnalyzePage() {
   }
 
   const removeFeature = useCallback((idx) => {
-    setFeatures((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev));
+    setFeatures((prev) => {
+      if (prev.length <= 1) return prev;
+      const nextFeatures = prev.filter((_, i) => i !== idx);
+      pendingFocusIndexRef.current = Math.max(0, idx - 1);
+      return nextFeatures;
+    });
+    setStatusMessage(`Feature ${idx + 1} removed.`);
   }, []);
 
   const updateFeature = useCallback((idx, field, value) => {
@@ -339,6 +363,25 @@ export default function AnalyzePage() {
           and a sprint roadmap — in seconds.
         </p>
       </header>
+
+      {/* Screen reader status live region */}
+      <div
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: 0,
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          border: 0,
+        }}
+        role="status"
+        aria-live="polite"
+      >
+        {statusMessage}
+      </div>
 
       {/* ── Two-column layout ── */}
       <main className={styles.main}>
