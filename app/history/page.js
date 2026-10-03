@@ -8,15 +8,22 @@ import AuthModal from '@/app/components/AuthModal';
 import { sanitizeCsvCell } from '@/lib/scoring';
 import styles from './page.module.css';
 
-// Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
+// Bolt optimization: Single O(N) pass helper with fast-path sprint check to eliminate redundant string allocations (.toUpperCase()) per card render
 function getSprintCounts(features) {
   let now = 0;
   let next = 0;
   if (Array.isArray(features)) {
     for (let i = 0; i < features.length; i++) {
-      const sprint = features[i]?.sprint?.toUpperCase();
-      if (sprint === 'NOW') now++;
-      else if (sprint === 'NEXT') next++;
+      const rawSprint = features[i]?.sprint;
+      if (rawSprint === 'NOW') {
+        now++;
+      } else if (rawSprint === 'NEXT') {
+        next++;
+      } else {
+        const sprint = rawSprint?.toUpperCase();
+        if (sprint === 'NOW') now++;
+        else if (sprint === 'NEXT') next++;
+      }
     }
   }
   return { now, next };
