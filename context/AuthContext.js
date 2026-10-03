@@ -222,24 +222,47 @@ export function AuthProvider({ children }) {
       throw new Error('You must be logged in to save prioritization history.');
     }
 
-    const title =
-      sessionData.title ||
-      (sessionData.features?.[0]?.name
-        ? `${sessionData.features[0].name}${sessionData.features.length > 1 ? ` +${sessionData.features.length - 1} more` : ''}`
-        : 'Feature Prioritization');
+    if (!sessionData || typeof sessionData !== 'object') {
+      throw new Error('Invalid session data provided.');
+    }
 
-    const topFeature = sessionData.features?.[0]?.name || 'N/A';
-    const topRice = sessionData.features?.[0]?.rice_score || 0;
+    // Security: Validate & sanitize sessionData input to prevent storage pollution and arbitrary object property injection
+    const rawFeatures = Array.isArray(sessionData.features) ? sessionData.features : [];
+    const sanitizedFeatures = rawFeatures.slice(0, 10).map((f) => {
+      const item = f && typeof f === 'object' ? f : {};
+      return {
+        name: typeof item.name === 'string' ? item.name.slice(0, 200).trim() : 'Untitled Feature',
+        reach: Number.isFinite(Number(item.reach)) ? Math.max(1, Math.min(10, Number(item.reach))) : 5,
+        impact: Number.isFinite(Number(item.impact)) ? Math.max(1, Math.min(10, Number(item.impact))) : 5,
+        confidence: Number.isFinite(Number(item.confidence)) ? Math.max(10, Math.min(100, Number(item.confidence))) : 80,
+        effort: Number.isFinite(Number(item.effort)) ? Math.max(1, Math.min(10, Number(item.effort))) : 3,
+        rice_score: Number.isFinite(Number(item.rice_score)) ? Number(item.rice_score) : 0,
+        sprint: typeof item.sprint === 'string' ? item.sprint.slice(0, 10).toUpperCase() : 'LATER',
+        reasoning: typeof item.reasoning === 'string' ? item.reasoning.slice(0, 1000).trim() : '',
+        risks: Array.isArray(item.risks) ? item.risks.map((r) => String(r).slice(0, 200).trim()).filter(Boolean).slice(0, 5) : [],
+        category: typeof item.category === 'string' ? item.category.slice(0, 100).trim() : 'Other',
+      };
+    });
+
+    const rawTitle = typeof sessionData.title === 'string' ? sessionData.title.trim() : '';
+    const defaultTitle = sanitizedFeatures[0]?.name
+      ? `${sanitizedFeatures[0].name}${sanitizedFeatures.length > 1 ? ` +${sanitizedFeatures.length - 1} more` : ''}`
+      : 'Feature Prioritization';
+    const title = (rawTitle || defaultTitle).slice(0, 200);
+
+    const topFeature = sanitizedFeatures[0]?.name || 'N/A';
+    const topRice = sanitizedFeatures[0]?.rice_score || 0;
+    const model = (typeof sessionData.model === 'string' ? sessionData.model.trim() : 'Multi-Provider AI').slice(0, 100);
 
     if (isFirebaseConfigured && db) {
       const historyCol = collection(db, 'users', user.uid, 'history');
       const docRef = await addDoc(historyCol, {
         title,
-        features: sessionData.features || [],
-        featureCount: sessionData.features?.length || 0,
+        features: sanitizedFeatures,
+        featureCount: sanitizedFeatures.length,
         topFeature,
         topRice,
-        model: sessionData.model || 'meta/llama-3.3-70b-instruct',
+        model,
         createdAt: serverTimestamp(),
       });
       return docRef.id;
@@ -250,11 +273,11 @@ export function AuthProvider({ children }) {
         id: 'hist_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
         userId: user.uid,
         title,
-        features: sessionData.features || [],
-        featureCount: sessionData.features?.length || 0,
+        features: sanitizedFeatures,
+        featureCount: sanitizedFeatures.length,
         topFeature,
         topRice,
-        model: sessionData.model || 'meta/llama-3.3-70b-instruct',
+        model,
         createdAt: new Date().toISOString(),
       };
       mockHistory.unshift(newItem);
