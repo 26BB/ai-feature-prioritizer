@@ -17,3 +17,8 @@
 **Vulnerability:** Dynamic LLM client instances were cached in a global `Map` keyed by `${baseURL}:${apiKey}` without size limits or eviction policy, allowing callers sending unique `x-api-key` headers to cause heap memory exhaustion DoS and retain sensitive BYOK keys indefinitely in process memory.
 **Learning:** Caching objects keyed by untrusted user headers in global maps creates an unbounded memory growth vector (CWE-400) and leads to long-term credential retention in process heap memory.
 **Prevention:** Bound all module-level caches with explicit capacity limits and FIFO/LRU eviction policies to prevent memory leaks and ensure credential eviction.
+
+## 2025-05-22 - Untrusted Client Session History Persistence & Property Injection
+**Vulnerability:** Client-supplied session objects passed to `saveSessionToHistory` were persisted directly to Firestore/localStorage without schema validation, field truncation, or array capping, allowing callers to inject arbitrary properties, cause database bloat DoS, or tamper with history state.
+**Learning:** Persisting raw client-side state objects into user databases without schema mapping allows arbitrary object properties to pollute storage subcollections and downstream components upon session re-opening or export.
+**Prevention:** Always validate, type-check, and construct explicit sanitized objects with strict array caps and string length bounds before writing client state into database collections.
