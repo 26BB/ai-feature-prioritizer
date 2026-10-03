@@ -217,7 +217,11 @@ export default function Results() {
       }
 
       const datasets = data.features.map((f) => {
-        const sprintKey   = f.sprint?.toUpperCase() ?? 'LATER';
+        // Bolt optimization: Fast-path exact sprint string lookup avoids calling .toUpperCase() and heap string allocation
+        const rawSprint   = f.sprint;
+        const sprintKey   = (rawSprint === 'NOW' || rawSprint === 'NEXT' || rawSprint === 'LATER')
+          ? rawSprint
+          : (rawSprint?.toUpperCase() ?? 'LATER');
         const colors      = BUBBLE_COLORS[sprintKey] ?? BUBBLE_COLORS.LATER;
         // ponytail: bubble radius is a linear approximation of RICE score; not log-scaled
         const bubbleRadius = Math.max(8, Math.min(30, f.rice_score / 40));
