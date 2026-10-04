@@ -105,6 +105,7 @@ const PwaInstallPrompt = memo(function PwaInstallPrompt() {
           onClick={handleDismiss}
           className={styles.closeBtn}
           aria-label="Close install prompt"
+          title="Close install prompt"
         >
           ✕
         </button>
