@@ -159,7 +159,8 @@ export default function Results() {
   const chartInstance             = useRef(null);
   const tabRefs                   = useRef([]);
 
-  const handleTabKeyDown = (e, index) => {
+  // Bolt optimization: Stable useCallback tab keyboard navigation handler preserves reference equality across renders
+  const handleTabKeyDown = useCallback((e, index) => {
     let newIndex = index;
     if (e.key === 'ArrowRight') {
       newIndex = (index + 1) % TABS.length;
@@ -175,7 +176,7 @@ export default function Results() {
     e.preventDefault();
     setActiveTab(newIndex);
     tabRefs.current[newIndex]?.focus();
-  };
+  }, []);
 
 
   // ─── Load results from sessionStorage on mount (ensures SSR hydration safety) ───
