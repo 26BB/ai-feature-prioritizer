@@ -8,6 +8,15 @@ import AuthModal from '@/app/components/AuthModal';
 import { sanitizeCsvCell } from '@/lib/scoring';
 import styles from './page.module.css';
 
+// Bolt optimization: Pre-instantiate static Intl.DateTimeFormat at module scope to eliminate per-card ICU locale initialization overhead on render
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 // Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
 function getSprintCounts(features) {
   let now = 0;
@@ -25,13 +34,7 @@ function getSprintCounts(features) {
 // Bolt optimization: Memoized HistoryCard component prevents re-rendering history cards and running ICU locale date formatting on parent state updates (e.g. auth modal toggles)
 const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onReopen }) {
   const dateStr = item.createdAt
-    ? new Date(item.createdAt).toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+    ? dateFormatter.format(new Date(item.createdAt))
     : 'Recent';
 
   const { now: nowCount, next: nextCount } = getSprintCounts(item.features);
