@@ -84,6 +84,11 @@ const ScoreCard = memo(function ScoreCard({ feature, index }) {
             <div className={styles.componentBar}>
               <div
                 className={styles.componentFill}
+                role="progressbar"
+                aria-valuenow={feature[bar.field]}
+                aria-valuemin={0}
+                aria-valuemax={bar.max}
+                aria-label={`${bar.label}: ${feature[bar.field]}${bar.suffix} out of ${bar.max}${bar.suffix}`}
                 style={{
                   width: `${(feature[bar.field] / bar.max) * 100}%`,
                   background: bar.inverse

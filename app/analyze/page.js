@@ -261,7 +261,14 @@ export default function AnalyzePage() {
             ))}
           </div>
 
-          <div className={styles.progressBar}>
+          <div
+            className={styles.progressBar}
+            role="progressbar"
+            aria-valuenow={currentStep + 1}
+            aria-valuemin={1}
+            aria-valuemax={LOADING_STEPS.length}
+            aria-label="Analysis progress"
+          >
             <div
               className={styles.progressFill}
               style={{ width: `${((currentStep + 1) / LOADING_STEPS.length) * 100}%` }}
@@ -295,7 +302,13 @@ export default function AnalyzePage() {
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
           <Link href="/history" className={styles.navLink}>My History</Link>
-          <button onClick={() => setIsModalOpen(true)} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className={styles.navLink}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Open settings and BYOK modal"
+          >
             ⚙️ Settings & BYOK
           </button>
         </div>
