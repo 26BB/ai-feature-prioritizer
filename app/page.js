@@ -37,7 +37,13 @@ export default function LandingHome() {
           <Link href="/" className={`${pageStyles.navLink} ${pageStyles.navActive}`}>Home</Link>
           <Link href="/analyze" className={pageStyles.navLink}>Workspace</Link>
           <Link href="/history" className={pageStyles.navLink}>My History</Link>
-          <button onClick={() => setIsModalOpen(true)} className={pageStyles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className={pageStyles.navLink}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Open settings and BYOK modal"
+          >
             ⚙️ Settings & BYOK
           </button>
         </div>
