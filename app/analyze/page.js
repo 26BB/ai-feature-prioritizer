@@ -54,8 +54,8 @@ const FeatureCard = memo(function FeatureCard({
           <button
             onClick={() => onRemove(idx)}
             className={styles.removeBtn}
-            aria-label={`Remove feature ${idx + 1}`}
-            title={`Remove feature ${idx + 1}`}
+            aria-label={feature.name?.trim() ? `Remove "${feature.name.trim()}"` : `Remove feature ${idx + 1}`}
+            title={feature.name?.trim() ? `Remove "${feature.name.trim()}"` : `Remove feature ${idx + 1}`}
           >
             ✕
           </button>
@@ -320,10 +320,12 @@ export default function AnalyzePage() {
           )}
           <button
             onClick={handleResetForm}
-            className="btn-primary"
+            className="btn-ghost"
             style={{ padding: '8px 18px', fontSize: '13px' }}
+            aria-label="Reset feature input form"
+            title="Reset feature input form"
           >
-            + Reset Form
+            ↺ Reset Form
           </button>
         </div>
       </nav>
@@ -363,11 +365,20 @@ export default function AnalyzePage() {
           </div>
 
           <div className={styles.actions}>
-            {features.length < 10 && (
-              <button onClick={addFeature} className="btn-secondary" style={{ width: '100%' }}>
-                + Add Another Feature ({features.length}/10)
-              </button>
-            )}
+            <button
+              onClick={addFeature}
+              disabled={features.length >= 10}
+              aria-disabled={features.length >= 10}
+              className="btn-secondary"
+              style={{
+                width: '100%',
+                cursor: features.length >= 10 ? 'not-allowed' : 'pointer',
+                opacity: features.length >= 10 ? 0.65 : 1,
+              }}
+              title={features.length >= 10 ? 'Maximum limit of 10 features reached' : 'Add another feature card'}
+            >
+              {features.length >= 10 ? 'Maximum Limit Reached (10/10)' : `+ Add Another Feature (${features.length}/10)`}
+            </button>
 
             {error && <div className={styles.errorMsg} role="alert">⚠️ {error}</div>}
 
