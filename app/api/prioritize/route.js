@@ -1,5 +1,34 @@
 import { prioritizeFeatures } from '@/lib/llmProviders';
 
+// Security: In-memory sliding window rate limiter (CWE-770) to protect LLM API tokens and prevent DoS
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10;
+const MAX_RATE_LIMITER_MAP_SIZE = 1000;
+const rateLimitMap = new Map();
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  let record = rateLimitMap.get(ip);
+
+  if (!record || now - record.startTime > RATE_LIMIT_WINDOW_MS) {
+    if (rateLimitMap.size >= MAX_RATE_LIMITER_MAP_SIZE) {
+      const oldestKey = rateLimitMap.keys().next().value;
+      if (oldestKey) rateLimitMap.delete(oldestKey);
+    }
+    record = { count: 1, startTime: now };
+    rateLimitMap.set(ip, record);
+    return { allowed: true };
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfterSeconds = Math.ceil((record.startTime + RATE_LIMIT_WINDOW_MS - now) / 1000);
+    return { allowed: false, retryAfter: Math.max(1, retryAfterSeconds) };
+  }
+
+  record.count += 1;
+  return { allowed: true };
+}
+
 // Max input character lengths to prevent DoS and prompt injection risks
 const MAX_NAME_LENGTH = 200;
 const MAX_DESC_LENGTH = 1000;
@@ -7,6 +36,24 @@ const MAX_CAT_LENGTH = 100;
 
 export async function POST(request) {
   try {
+    // Security: Extract client IP address for rate limiting
+    const clientIp = (
+      request.headers.get('x-forwarded-for')?.split(',')[0] ||
+      request.headers.get('x-real-ip') ||
+      '127.0.0.1'
+    ).trim();
+
+    const { allowed, retryAfter } = checkRateLimit(clientIp);
+    if (!allowed) {
+      return Response.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(retryAfter) },
+        }
+      );
+    }
+
     const body = await request.json();
     const { features } = body;
 
