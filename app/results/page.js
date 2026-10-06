@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
-import { groupBySprint, getScoreColor, sanitizeCsvCell } from '@/lib/scoring';
+import { groupBySprint, getScoreColor, sanitizeCsvCell, getSprintBadgeClass } from '@/lib/scoring';
 import styles from './page.module.css';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -62,8 +62,8 @@ const ScoreCard = memo(function ScoreCard({ feature, index }) {
     >
       <div className={styles.cardTop}>
         <h3 className={styles.featureName}>{feature.name}</h3>
-        {/* ponytail: optional chaining guards null sprint from LLM */}
-        <span className={`badge-${(feature.sprint ?? 'later').toLowerCase()}`}>
+        {/* Bolt optimization: getSprintBadgeClass avoids string allocations & .toLowerCase() on render */}
+        <span className={getSprintBadgeClass(feature.sprint)}>
           {feature.sprint ?? 'LATER'}
         </span>
       </div>
