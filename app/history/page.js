@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/app/components/AuthModal';
-import { sanitizeCsvCell } from '@/lib/scoring';
+import { sanitizeCsvCell, getSprintBadgeClass } from '@/lib/scoring';
 import styles from './page.module.css';
 
 // Bolt optimization: Pre-instantiate static Intl.DateTimeFormat at module scope to eliminate per-card ICU locale initialization overhead on render
@@ -17,15 +17,22 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   minute: '2-digit',
 });
 
-// Bolt optimization: Single O(N) pass helper for sprint counting to avoid intermediate array allocations (.filter) per render card
+// Bolt optimization: Single O(N) pass helper for sprint counting with fast-path uppercase comparison to avoid string allocations (.toUpperCase()) per render card
 function getSprintCounts(features) {
   let now = 0;
   let next = 0;
   if (Array.isArray(features)) {
     for (let i = 0; i < features.length; i++) {
-      const sprint = features[i]?.sprint?.toUpperCase();
-      if (sprint === 'NOW') now++;
-      else if (sprint === 'NEXT') next++;
+      const rawSprint = features[i]?.sprint;
+      if (rawSprint === 'NOW') {
+        now++;
+      } else if (rawSprint === 'NEXT') {
+        next++;
+      } else if (rawSprint) {
+        const sprint = rawSprint.toUpperCase();
+        if (sprint === 'NOW') now++;
+        else if (sprint === 'NEXT') next++;
+      }
     }
   }
   return { now, next };
@@ -68,7 +75,8 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
             <div key={f.name} className={styles.previewItem}>
               <span className={styles.previewName}>{f.name}</span>
               <div className={styles.previewRight}>
-                <span className={`badge-${(f.sprint || 'later').toLowerCase()}`}>
+                {/* Bolt optimization: getSprintBadgeClass avoids string allocations & .toLowerCase() on render */}
+                <span className={getSprintBadgeClass(f.sprint)}>
                   {f.sprint || 'LATER'}
                 </span>
                 <span className={styles.previewScore}>{f.rice_score}</span>
