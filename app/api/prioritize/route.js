@@ -100,7 +100,8 @@ export async function POST(request) {
     if (rawApiKey.length > 256) {
       return Response.json({ error: 'API key exceeds maximum permitted length (256 characters)' }, { status: 400 });
     }
-    const userApiKey = rawApiKey.replace(/[\r\n\t]/g, '').trim();
+    // Security: Strip all control characters (0x00-0x1F, 0x7F) from API key header to prevent header injection/pollution
+    const userApiKey = rawApiKey.replace(/[\x00-\x1F\x7F]/g, '').trim();
 
     const { features: scoredFeatures, source } = await prioritizeFeatures({
       features: sanitizedFeatures,
