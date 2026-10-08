@@ -129,7 +129,8 @@ export default function AnalyzePage() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const [features, setFeatures] = useState([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
+  // Bolt optimization: Lazy state initialization prevents executing feature factory ID generations (Date.now + Math.random) on every re-render
+  const [features, setFeatures] = useState(() => [makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
