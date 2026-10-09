@@ -222,6 +222,11 @@ export function AuthProvider({ children }) {
       throw new Error('You must be logged in to save prioritization history.');
     }
 
+    // Security: Validate user UID to prevent Firestore path traversal (CWE-22)
+    if (typeof user.uid !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(user.uid)) {
+      throw new Error('Invalid user identifier.');
+    }
+
     const title =
       sessionData.title ||
       (sessionData.features?.[0]?.name
@@ -229,15 +234,17 @@ export function AuthProvider({ children }) {
         : 'Feature Prioritization');
 
     const topFeature = sessionData.features?.[0]?.name || 'N/A';
-    const topRice = sessionData.features?.[0]?.rice_score || 0;
+    const topRice = Number.isFinite(Number(sessionData.features?.[0]?.rice_score))
+      ? Number(sessionData.features[0].rice_score)
+      : 0;
 
     if (isFirebaseConfigured && db) {
       const historyCol = collection(db, 'users', user.uid, 'history');
       const docRef = await addDoc(historyCol, {
-        title,
+        title: String(title).slice(0, 200),
         features: sessionData.features || [],
         featureCount: sessionData.features?.length || 0,
-        topFeature,
+        topFeature: String(topFeature).slice(0, 100),
         topRice,
         model: sessionData.model || 'meta/llama-3.3-70b-instruct',
         createdAt: serverTimestamp(),
@@ -268,6 +275,12 @@ export function AuthProvider({ children }) {
   const getUserHistory = useCallback(async () => {
     if (!user) return [];
 
+    // Security: Validate user UID to prevent Firestore path traversal (CWE-22)
+    if (typeof user.uid !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(user.uid)) {
+      console.warn('[PriorityAI Auth] Invalid user UID rejected for history lookup:', user.uid);
+      return [];
+    }
+
     if (isFirebaseConfigured && db) {
       try {
         const historyCol = collection(db, 'users', user.uid, 'history');
@@ -296,9 +309,15 @@ export function AuthProvider({ children }) {
   const deleteHistoryItem = useCallback(async (id) => {
     if (!user) return;
 
-    // Security: Validate history document ID to prevent Firestore path traversal attacks (CWE-22 / CWE-352)
-    if (typeof id !== 'string' || !id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
-      console.warn('[PriorityAI Auth] Invalid or potentially malicious history document ID rejected:', id);
+    // Security: Validate user UID and history document ID to prevent Firestore path traversal (CWE-22 / CWE-352)
+    if (
+      typeof user.uid !== 'string' ||
+      !/^[a-zA-Z0-9_-]+$/.test(user.uid) ||
+      typeof id !== 'string' ||
+      !id ||
+      !/^[a-zA-Z0-9_-]+$/.test(id)
+    ) {
+      console.warn('[PriorityAI Auth] Invalid UID or history document ID rejected:', { uid: user?.uid, id });
       return;
     }
 
