@@ -11,6 +11,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,6 +39,7 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
     setErrorMsg('');
     setEmail('');
     setPassword('');
+    setShowPassword(false);
     setDisplayName('');
   }, [isOpen, mode]);
 
@@ -275,15 +277,27 @@ const AuthModal = memo(function AuthModal({ isOpen, onClose, onSuccess }) {
             <label htmlFor="auth-password" className={styles.label}>
               Password *
             </label>
-            <input
-              id="auth-password"
-              type="password"
-              required
-              className="input-field"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className={styles.passwordWrapper}>
+              <input
+                id="auth-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                className="input-field"
+                style={{ paddingRight: '36px', width: '100%' }}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className={styles.toggleShowBtn}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           {errorMsg && <div className={styles.errorBanner} role="alert">⚠ {errorMsg}</div>}
