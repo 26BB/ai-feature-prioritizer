@@ -137,12 +137,15 @@ export default function AnalyzePage() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for ApiKeyModal and AuthModal
+  const handleOpenApiKeyModal = useCallback(() => setIsModalOpen(true), []);
+  const handleOpenAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
   const handleCloseApiKeyModal = useCallback(() => setIsModalOpen(false), []);
   const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
-  function addFeature() {
-    if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
-  }
+  // Bolt optimization: Zero-dependency useCallback preserves callback reference equality across keystrokes
+  const addFeature = useCallback(() => {
+    setFeatures((prev) => (prev.length < 10 ? [...prev, makeEmptyFeature()] : prev));
+  }, []);
 
   function handleResetForm() {
     const isDirty = features.some((f) => f.name.trim() || f.description.trim());
@@ -295,7 +298,7 @@ export default function AnalyzePage() {
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
           <Link href="/history" className={styles.navLink}>My History</Link>
-          <button onClick={() => setIsModalOpen(true)} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button onClick={handleOpenApiKeyModal} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
             ⚙️ Settings & BYOK
           </button>
         </div>
@@ -311,7 +314,7 @@ export default function AnalyzePage() {
             </button>
           ) : (
             <button
-              onClick={() => setIsAuthModalOpen(true)}
+              onClick={handleOpenAuthModal}
               className="btn-ghost"
               style={{ padding: '6px 14px', fontSize: '13px' }}
             >
