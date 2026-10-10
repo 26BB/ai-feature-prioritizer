@@ -222,6 +222,11 @@ export function AuthProvider({ children }) {
       throw new Error('You must be logged in to save prioritization history.');
     }
 
+    // Security: Validate user UID before constructing subcollection path (CWE-22)
+    if (typeof user.uid !== 'string' || !user.uid || !/^[a-zA-Z0-9_-]+$/.test(user.uid)) {
+      throw new Error('Invalid user account session.');
+    }
+
     const title =
       sessionData.title ||
       (sessionData.features?.[0]?.name
