@@ -180,6 +180,29 @@
   gap: 6px;
 }
 
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggleShowBtn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s ease;
+}
+
+.toggleShowBtn:hover {
+  transform: scale(1.1);
+}
+
 .label {
   font-size: 12px;
   font-weight: 600;
