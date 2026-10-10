@@ -45,6 +45,7 @@ const FeatureCard = memo(function FeatureCard({
   canRemove,
   onRemove,
   onUpdate,
+  onKeyDown,
 }) {
   return (
     <div className={`${styles.featureCard} glass-card`}>
@@ -78,6 +79,7 @@ const FeatureCard = memo(function FeatureCard({
           placeholder="e.g. AI Auto-complete for search"
           value={feature.name}
           onChange={(e) => onUpdate(idx, 'name', e.target.value)}
+          onKeyDown={onKeyDown}
           maxLength={100}
           required
           aria-required="true"
@@ -101,6 +103,7 @@ const FeatureCard = memo(function FeatureCard({
           placeholder="What does this feature do? Who benefits? What problem does it solve?"
           value={feature.description}
           onChange={(e) => onUpdate(idx, 'description', e.target.value)}
+          onKeyDown={onKeyDown}
           rows={3}
           maxLength={500}
           aria-describedby={`desc-count-${idx}`}
@@ -114,6 +117,7 @@ const FeatureCard = memo(function FeatureCard({
           className="input-field"
           value={feature.category}
           onChange={(e) => onUpdate(idx, 'category', e.target.value)}
+          onKeyDown={onKeyDown}
           aria-label={`Category for feature ${idx + 1}`}
         >
           {CATEGORIES.map((cat) => (
@@ -360,6 +364,12 @@ export default function AnalyzePage() {
                 canRemove={features.length > 1}
                 onRemove={removeFeature}
                 onUpdate={updateFeature}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAnalyze();
+                  }
+                }}
               />
             ))}
           </div>
@@ -385,9 +395,34 @@ export default function AnalyzePage() {
             <button
               onClick={handleAnalyze}
               className="btn-primary btn-glow"
-              style={{ width: '100%', padding: '16px', fontSize: '16px', fontWeight: '700' }}
+              style={{
+                width: '100%',
+                padding: '16px',
+                fontSize: '16px',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justify: 'center',
+                gap: '8px',
+              }}
+              aria-label="Calculate RICE scores and generate roadmap (Shortcut: Ctrl+Enter or Cmd+Enter)"
+              title="Calculate RICE scores and generate roadmap (Shortcut: Ctrl+Enter or Cmd+Enter)"
             >
-              ⚡ Calculate RICE & Generate Roadmap →
+              <span>⚡ Calculate RICE & Generate Roadmap →</span>
+              <kbd
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  background: 'rgba(0, 0, 0, 0.25)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: 'inherit',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Ctrl+Enter
+              </kbd>
             </button>
           </div>
         </section>
