@@ -159,7 +159,8 @@ export default function Results() {
   const chartInstance             = useRef(null);
   const tabRefs                   = useRef([]);
 
-  const handleTabKeyDown = (e, index) => {
+  // Bolt optimization: Memoized tab navigation keyboard handler preserves function reference stability across re-renders
+  const handleTabKeyDown = useCallback((e, index) => {
     let newIndex = index;
     if (e.key === 'ArrowRight') {
       newIndex = (index + 1) % TABS.length;
@@ -175,7 +176,7 @@ export default function Results() {
     e.preventDefault();
     setActiveTab(newIndex);
     tabRefs.current[newIndex]?.focus();
-  };
+  }, []);
 
 
   // ─── Load results from sessionStorage on mount (ensures SSR hydration safety) ───
@@ -452,8 +453,9 @@ export default function Results() {
           {/* Tab 0 — Score Cards */}
           {activeTab === 0 && (
             <div id="tabpanel-0" role="tabpanel" aria-labelledby="tab-0" className={styles.cardsGrid}>
+              {/* Bolt optimization: f.id || name_index key prevents React reconciliation key collisions when features have duplicate names */}
               {data.features.map((f, i) => (
-                <ScoreCard key={f.name} feature={f} index={i} />
+                <ScoreCard key={f.id || `${f.name}_${i}`} feature={f} index={i} />
               ))}
             </div>
           )}
@@ -492,8 +494,9 @@ export default function Results() {
                     {groups[key].length === 0 ? (
                       <div className={styles.emptyLane}>No features in this sprint</div>
                     ) : (
-                      groups[key].map((f) => (
-                        <RoadmapCard key={f.name} feature={f} />
+                      /* Bolt optimization: f.id || name_index key prevents React reconciliation key collisions when features have duplicate names */
+                      groups[key].map((f, i) => (
+                        <RoadmapCard key={f.id || `${f.name}_${i}`} feature={f} />
                       ))
                     )}
                   </div>
