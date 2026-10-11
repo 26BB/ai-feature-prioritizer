@@ -100,8 +100,8 @@ const ScoreCard = memo(function ScoreCard({ feature, index }) {
 
       {feature.risks?.length > 0 && (
         <div className={styles.risks}>
-          {feature.risks.slice(0, 3).map((r) => (
-            <span key={r} className="tag-risk">⚠ {r}</span>
+          {feature.risks.slice(0, 3).map((r, i) => (
+            <span key={`${r}_${i}`} className="tag-risk">⚠ {r}</span>
           ))}
         </div>
       )}
@@ -137,8 +137,8 @@ const RoadmapCard = memo(function RoadmapCard({ feature }) {
 
       {feature.risks?.length > 0 && (
         <div className={styles.risks}>
-          {feature.risks.slice(0, 2).map((r) => (
-            <span key={r} className="tag-risk">⚠ {r}</span>
+          {feature.risks.slice(0, 2).map((r, i) => (
+            <span key={`${r}_${i}`} className="tag-risk">⚠ {r}</span>
           ))}
         </div>
       )}
@@ -453,7 +453,7 @@ export default function Results() {
           {activeTab === 0 && (
             <div id="tabpanel-0" role="tabpanel" aria-labelledby="tab-0" className={styles.cardsGrid}>
               {data.features.map((f, i) => (
-                <ScoreCard key={f.name} feature={f} index={i} />
+                <ScoreCard key={`${f.name}_${i}`} feature={f} index={i} />
               ))}
             </div>
           )}
@@ -492,8 +492,8 @@ export default function Results() {
                     {groups[key].length === 0 ? (
                       <div className={styles.emptyLane}>No features in this sprint</div>
                     ) : (
-                      groups[key].map((f) => (
-                        <RoadmapCard key={f.name} feature={f} />
+                      groups[key].map((f, i) => (
+                        <RoadmapCard key={`${f.name}_${i}`} feature={f} />
                       ))
                     )}
                   </div>

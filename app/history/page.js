@@ -71,8 +71,8 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
       {/* Features preview */}
       {item.features?.length > 0 && (
         <div className={styles.featurePreviewList}>
-          {item.features.slice(0, 3).map((f) => (
-            <div key={f.name} className={styles.previewItem}>
+          {item.features.slice(0, 3).map((f, i) => (
+            <div key={`${f.name}_${i}`} className={styles.previewItem}>
               <span className={styles.previewName}>{f.name}</span>
               <div className={styles.previewRight}>
                 {/* Bolt optimization: getSprintBadgeClass avoids string allocations & .toLowerCase() on render */}

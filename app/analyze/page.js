@@ -140,9 +140,10 @@ export default function AnalyzePage() {
   const handleCloseApiKeyModal = useCallback(() => setIsModalOpen(false), []);
   const handleCloseAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
-  function addFeature() {
-    if (features.length < 10) setFeatures([...features, makeEmptyFeature()]);
-  }
+  // Bolt optimization: Stable useCallback handlers with functional updates prevent re-allocating functions on input keystrokes
+  const addFeature = useCallback(() => {
+    setFeatures((prev) => (prev.length < 10 ? [...prev, makeEmptyFeature()] : prev));
+  }, []);
 
   function handleResetForm() {
     const isDirty = features.some((f) => f.name.trim() || f.description.trim());

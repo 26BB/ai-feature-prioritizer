@@ -17,3 +17,7 @@
 ## 2025-05-22 - Converting Dynamic Imports to Static Imports Inflates Route Bundle Size
 **Learning:** Converting dynamically imported client libraries (e.g., `chart.js` loaded inside `useEffect` on tab activation) into static top-level imports defeats Next.js route code-splitting, inflating initial JavaScript bundle size and degrading LCP/TBT metrics for all visitors to the route.
 **Action:** Keep heavy visualization and chart libraries dynamically loaded or code-split unless required on initial page render.
+
+## 2025-05-23 - Side Effects in Functional State Updaters Cause Unexpected Logic Execution
+**Learning:** Wrapping imperative side-effects (e.g. `window.confirm`) inside React `setState` functional updater callbacks (`setFeatures((prev) => ...)` to avoid closed-over dependencies) violates state updater purity and causes subsequent state/error resets outside `setState` to run unconditionally even when user cancels the operation.
+**Action:** Keep side-effects and user confirmations in normal event handlers before invoking `setState`. Use functional state updaters solely for pure state transformations.
