@@ -262,6 +262,13 @@ export default function AnalyzePage() {
     }
   }
 
+  const handleInputKeyDown = (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleAnalyze();
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingScreen}>
@@ -387,7 +394,7 @@ export default function AnalyzePage() {
 
       {/* ── Two-column layout ── */}
       <main className={styles.main}>
-        <section className={styles.inputSection}>
+        <section className={styles.inputSection} onKeyDown={handleInputKeyDown}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Your Features</h2>
             <span className={styles.featureCount}>{filledCount}/{features.length} filled</span>
@@ -428,9 +435,34 @@ export default function AnalyzePage() {
             <button
               onClick={handleAnalyze}
               className="btn-primary btn-glow"
-              style={{ width: '100%', padding: '16px', fontSize: '16px', fontWeight: '700' }}
+              style={{
+                width: '100%',
+                padding: '16px',
+                fontSize: '16px',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+              }}
+              title="Calculate RICE scores & generate roadmap (Ctrl+Enter or ⌘+Enter)"
+              aria-keyshortcuts="Control+Enter Meta+Enter"
             >
-              ⚡ Calculate RICE & Generate Roadmap →
+              <span>⚡ Calculate RICE & Generate Roadmap →</span>
+              <kbd
+                style={{
+                  fontSize: '11px',
+                  background: 'rgba(0, 0, 0, 0.25)',
+                  padding: '2px 7px',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.05em',
+                  fontWeight: '700',
+                }}
+              >
+                ⌘/Ctrl ↵
+              </kbd>
             </button>
           </div>
         </section>
