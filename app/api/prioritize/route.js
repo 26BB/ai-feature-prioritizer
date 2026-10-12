@@ -92,7 +92,11 @@ export async function POST(request) {
     }
 
     // Extract & validate BYOK headers if passed by client (prevents parameter tampering & DoS via oversized keys)
-    const rawProvider = (request.headers.get('x-provider') || 'auto').toLowerCase().trim();
+    const rawProviderHeader = request.headers.get('x-provider') || 'auto';
+    if (rawProviderHeader.length > 50) {
+      return Response.json({ error: 'Provider header exceeds maximum permitted length (50 characters)' }, { status: 400 });
+    }
+    const rawProvider = rawProviderHeader.toLowerCase().trim();
     const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
     const userProvider = ALLOWED_PROVIDERS.has(rawProvider) ? rawProvider : 'auto';
 
