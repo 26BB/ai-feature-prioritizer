@@ -73,9 +73,11 @@ export async function POST(request) {
         return Response.json({ error: `Feature #${i + 1} must be a valid object` }, { status: 400 });
       }
 
-      const name = typeof item.name === 'string' ? item.name.trim() : '';
-      const description = typeof item.description === 'string' ? item.description.trim() : '';
-      const category = typeof item.category === 'string' ? item.category.trim() : 'Other';
+      // Security: Strip control characters to prevent null byte/control string injection into LLM prompts & logs
+      const stripCtrl = (s) => s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+      const name = typeof item.name === 'string' ? stripCtrl(item.name) : '';
+      const description = typeof item.description === 'string' ? stripCtrl(item.description) : '';
+      const category = typeof item.category === 'string' ? stripCtrl(item.category) : 'Other';
 
       if (!name) {
         return Response.json({ error: `Feature #${i + 1} requires a valid name` }, { status: 400 });
@@ -115,6 +117,11 @@ export async function POST(request) {
 
     return Response.json({ features: scoredFeatures, model: source });
   } catch (error) {
+    // Security: Return 400 Bad Request on malformed JSON payload instead of unhandled 500 error
+    if (error instanceof SyntaxError) {
+      return Response.json({ error: 'Invalid JSON request payload' }, { status: 400 });
+    }
+
     // Security: Log actual error details internally, return sanitized message to client to prevent info leakage
     console.error('Prioritize API error:', error);
 
