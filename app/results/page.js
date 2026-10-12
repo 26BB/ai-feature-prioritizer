@@ -155,6 +155,8 @@ export default function Results() {
   const [activeTab, setActiveTab] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle'); // 'idle' | 'saving' | 'saved' | 'error'
+  const [csvExported, setCsvExported] = useState(false);
+  const [copiedSummary, setCopiedSummary] = useState(false);
   const chartRef                  = useRef(null);
   const chartInstance             = useRef(null);
   const tabRefs                   = useRef([]);
@@ -287,7 +289,7 @@ export default function Results() {
     };
   }, [activeTab, data]);
 
-  // ─── CSV export (Bolt optimization: memoized callback preserves function reference across tab toggles and save state transitions) ───
+  // ─── CSV export & Copy Summary ───────────────────────────────────────────
   const exportCSV = useCallback(() => {
     if (!data) return;
 
@@ -309,6 +311,20 @@ export default function Results() {
     const link = Object.assign(document.createElement('a'), { href: url, download: 'priority-ai-results.csv' });
     link.click();
     URL.revokeObjectURL(url);
+
+    setCsvExported(true);
+    setTimeout(() => setCsvExported(false), 2000);
+  }, [data]);
+
+  const copySummary = useCallback(() => {
+    if (!data?.features) return;
+    const listText = data.features
+      .map((f, i) => `${i + 1}. ${f.name} — RICE: ${f.rice_score} [${f.sprint || 'LATER'}]`)
+      .join('\n');
+    const fullText = `📊 PriorityAI RICE Scorecard Summary:\n\n${listText}`;
+    navigator.clipboard.writeText(fullText);
+    setCopiedSummary(true);
+    setTimeout(() => setCopiedSummary(false), 2000);
   }, [data]);
 
   // Bolt optimization: Stable useCallback modal handlers preserve React.memo equality for AuthModal
@@ -394,13 +410,26 @@ export default function Results() {
             {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved' : '💾 Save History'}
           </button>
           <button
+            onClick={copySummary}
+            className="btn-ghost"
+            style={{ padding: '6px 14px', fontSize: '13px' }}
+            aria-label={copiedSummary ? 'Copied summary to clipboard' : 'Copy summary to clipboard'}
+            title="Copy prioritization summary to clipboard"
+          >
+            <span role="status" aria-live="polite">
+              {copiedSummary ? '✓ Copied!' : '📋 Copy'}
+            </span>
+          </button>
+          <button
             onClick={exportCSV}
             className="btn-ghost"
             style={{ padding: '6px 14px', fontSize: '13px' }}
-            aria-label="Export results as CSV file"
+            aria-label={csvExported ? 'Exported results as CSV file' : 'Export results as CSV file'}
             title="Export results as CSV file"
           >
-            ⬇ CSV
+            <span role="status" aria-live="polite">
+              {csvExported ? '✓ Exported!' : '⬇ CSV'}
+            </span>
           </button>
         </div>
       </nav>
