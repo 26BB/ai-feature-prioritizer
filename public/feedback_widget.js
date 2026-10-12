@@ -9,13 +9,13 @@
   const MAX_ERRORS = 10;
 
   window.addEventListener('error', function (event) {
+    // Security: Omit full stack trace to prevent internal application structure or sensitive local file path leakage (CWE-209 / CWE-497)
     capturedErrors.push({
       type: 'uncaught_error',
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
-      stack: event.error ? event.error.stack : null,
       time: new Date().toISOString()
     });
     if (capturedErrors.length > MAX_ERRORS) capturedErrors.shift();
