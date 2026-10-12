@@ -17,3 +17,8 @@
 **Vulnerability:** Dynamic LLM client instances were cached in a global `Map` keyed by `${baseURL}:${apiKey}` without size limits or eviction policy, allowing callers sending unique `x-api-key` headers to cause heap memory exhaustion DoS and retain sensitive BYOK keys indefinitely in process memory.
 **Learning:** Caching objects keyed by untrusted user headers in global maps creates an unbounded memory growth vector (CWE-400) and leads to long-term credential retention in process heap memory.
 **Prevention:** Bound all module-level caches with explicit capacity limits and FIFO/LRU eviction policies to prevent memory leaks and ensure credential eviction.
+
+## 2025-05-22 - Untrusted LLM Response Payload Bounding & Memory DoS
+**Vulnerability:** External LLM JSON response array items and text properties (`reasoning`, `risks`, `name`, `category`) were ingested without size or count bounds, allowing untrusted AI provider outputs or prompt injection payloads to cause server/client memory exhaustion and storage DoS (CWE-400).
+**Learning:** Input sanitization to external LLM APIs does not guarantee bounded response sizes; untrusted model responses or adversarial prompt injections can return arbitrarily large text buffers and arrays that pollute memory, web storage, and downstream rendering.
+**Prevention:** Always bound array item counts and truncate string property lengths when ingesting untrusted LLM response payloads before processing, storing, or transmitting them.
