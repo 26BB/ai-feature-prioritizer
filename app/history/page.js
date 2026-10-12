@@ -71,8 +71,9 @@ const HistoryCard = memo(function HistoryCard({ item, onDelete, onExportCSV, onR
       {/* Features preview */}
       {item.features?.length > 0 && (
         <div className={styles.featurePreviewList}>
-          {item.features.slice(0, 3).map((f) => (
-            <div key={f.name} className={styles.previewItem}>
+          {/* Bolt optimization: f.id || name_idx key prevents React reconciliation key collisions when features have duplicate names */}
+          {item.features.slice(0, 3).map((f, idx) => (
+            <div key={f.id || `${f.name}_${idx}`} className={styles.previewItem}>
               <span className={styles.previewName}>{f.name}</span>
               <div className={styles.previewRight}>
                 {/* Bolt optimization: getSprintBadgeClass avoids string allocations & .toLowerCase() on render */}
