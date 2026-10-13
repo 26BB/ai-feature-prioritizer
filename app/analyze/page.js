@@ -327,7 +327,14 @@ export default function AnalyzePage() {
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
           <Link href="/history" className={styles.navLink}>My History</Link>
-          <button onClick={() => setIsModalOpen(true)} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className={styles.navLink}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Open Settings and BYOK modal"
+            title="Open Settings and BYOK modal"
+          >
             ⚙️ Settings & BYOK
           </button>
         </div>
