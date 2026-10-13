@@ -22,3 +22,8 @@
 **Vulnerability:** External LLM JSON response array items and text properties (`reasoning`, `risks`, `name`, `category`) were ingested without size or count bounds, allowing untrusted AI provider outputs or prompt injection payloads to cause server/client memory exhaustion and storage DoS (CWE-400).
 **Learning:** Input sanitization to external LLM APIs does not guarantee bounded response sizes; untrusted model responses or adversarial prompt injections can return arbitrarily large text buffers and arrays that pollute memory, web storage, and downstream rendering.
 **Prevention:** Always bound array item counts and truncate string property lengths when ingesting untrusted LLM response payloads before processing, storing, or transmitting them.
+
+## 2025-05-23 - Client-Side Error Telemetry Credential Leakage in Feedback Collector
+**Vulnerability:** `window.onerror` and `console.error` handlers in client-side telemetry scripts (such as feedback widgets) captured unmasked error strings containing BYOK API keys or server tokens and transmitted them in telemetry payloads to external webhooks (CWE-532).
+**Learning:** Intercepting raw `console.error` and global window exceptions for client telemetry or feedback reporting without sanitization risks harvesting sensitive user or BYOK credentials when network failures or API key errors throw exceptions.
+**Prevention:** Apply strict API key/token redaction regexes to all captured client error messages and console streams before appending them to telemetry queues or webhooks.
