@@ -34,6 +34,9 @@ const MAX_NAME_LENGTH = 200;
 const MAX_DESC_LENGTH = 1000;
 const MAX_CAT_LENGTH = 100;
 
+// Bolt optimization: Pre-allocate static Set at module scope to prevent re-instantiating Set object on every HTTP API request
+const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
+
 export async function POST(request) {
   try {
     // Security: Extract client IP address for rate limiting
@@ -97,7 +100,6 @@ export async function POST(request) {
       return Response.json({ error: 'Provider header exceeds maximum permitted length (50 characters)' }, { status: 400 });
     }
     const rawProvider = rawProviderHeader.toLowerCase().trim();
-    const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
     const userProvider = ALLOWED_PROVIDERS.has(rawProvider) ? rawProvider : 'auto';
 
     const rawApiKey = request.headers.get('x-api-key') || '';
