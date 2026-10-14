@@ -84,11 +84,16 @@ const ApiKeyModal = memo(function ApiKeyModal({ isOpen, onClose }) {
 
   function handleSave() {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('priority_byok_provider', provider);
-      if (provider === 'auto') {
+      const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
+      const cleanProvider = ALLOWED_PROVIDERS.has(provider) ? provider : 'auto';
+      // Security: Strip control chars (\x00-\x1F, \x7F) and enforce max key length (256 chars) to prevent stored HTTP header injection (CWE-113)
+      const cleanKey = apiKey.replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, 256);
+
+      localStorage.setItem('priority_byok_provider', cleanProvider);
+      if (cleanProvider === 'auto' || !cleanKey) {
         localStorage.removeItem('priority_byok_key');
       } else {
-        localStorage.setItem('priority_byok_key', apiKey.trim());
+        localStorage.setItem('priority_byok_key', cleanKey);
       }
       setSavedSuccess(true);
       setTimeout(() => {
