@@ -67,7 +67,12 @@ const FeatureCard = memo(function FeatureCard({
           <label htmlFor={`name-${idx}`} className={styles.fieldLabel}>Feature Name *</label>
           <span
             id={`name-count-${idx}`}
-            style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}
+            style={{
+              fontSize: '11px',
+              color: (feature.name || '').length >= 90 ? 'var(--danger)' : 'var(--text-muted)',
+              fontWeight: (feature.name || '').length >= 90 ? '700' : '400',
+              marginBottom: '6px',
+            }}
           >
             {(feature.name || '').length}/100
           </span>
@@ -90,7 +95,12 @@ const FeatureCard = memo(function FeatureCard({
           <label htmlFor={`desc-${idx}`} className={styles.fieldLabel}>Description</label>
           <span
             id={`desc-count-${idx}`}
-            style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}
+            style={{
+              fontSize: '11px',
+              color: (feature.description || '').length >= 450 ? 'var(--danger)' : 'var(--text-muted)',
+              fontWeight: (feature.description || '').length >= 450 ? '700' : '400',
+              marginBottom: '6px',
+            }}
           >
             {(feature.description || '').length}/500
           </span>
@@ -193,6 +203,10 @@ export default function AnalyzePage() {
 
     if (valid.length === 0) {
       setError('Please add at least one feature name.');
+      const firstInput = document.getElementById('name-0');
+      if (firstInput) {
+        firstInput.focus();
+      }
       return;
     }
 
@@ -327,7 +341,13 @@ export default function AnalyzePage() {
           <Link href="/" className={styles.navLink}>Home</Link>
           <Link href="/analyze" className={`${styles.navLink} ${styles.navActive}`}>Workspace</Link>
           <Link href="/history" className={styles.navLink}>My History</Link>
-          <button onClick={() => setIsModalOpen(true)} className={styles.navLink} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className={styles.navLink}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Open settings and BYOK modal"
+            title="Open settings and BYOK modal"
+          >
             ⚙️ Settings & BYOK
           </button>
         </div>
