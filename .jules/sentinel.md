@@ -22,3 +22,8 @@
 **Vulnerability:** External LLM JSON response array items and text properties (`reasoning`, `risks`, `name`, `category`) were ingested without size or count bounds, allowing untrusted AI provider outputs or prompt injection payloads to cause server/client memory exhaustion and storage DoS (CWE-400).
 **Learning:** Input sanitization to external LLM APIs does not guarantee bounded response sizes; untrusted model responses or adversarial prompt injections can return arbitrarily large text buffers and arrays that pollute memory, web storage, and downstream rendering.
 **Prevention:** Always bound array item counts and truncate string property lengths when ingesting untrusted LLM response payloads before processing, storing, or transmitting them.
+
+## 2025-05-23 - Untrusted LLM Composite Score Spoofing & Formula Injection
+**Vulnerability:** External LLM completions could return arbitrary `rice_score` values (e.g., negative or extreme numbers), bypassing sanitized RICE framework parameters (`reach`, `impact`, `confidence`, `effort`).
+**Learning:** Checking `Number.isFinite(item.rice_score)` without validating mathematical consistency allowed untrusted AI responses or prompt injection payloads to override computed RICE scores and corrupt sorting and UI rendering.
+**Prevention:** Always calculate dependent composite metrics deterministically from validated formula components rather than trusting model-provided composite fields.

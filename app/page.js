@@ -38,6 +38,7 @@ export default function LandingHome() {
           <Link href="/analyze" className={pageStyles.navLink}>Workspace</Link>
           <Link href="/history" className={pageStyles.navLink}>My History</Link>
           <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
             className={pageStyles.navLink}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
