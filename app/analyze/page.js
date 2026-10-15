@@ -168,6 +168,31 @@ export default function AnalyzePage() {
     }
   }
 
+  function handleLoadExamples() {
+    setFeatures([
+      {
+        id: `f_ex_1_${Date.now()}`,
+        name: 'AI Semantic Search',
+        description: 'Natural language vector search across project documentation and code repositories.',
+        category: 'AI/ML',
+      },
+      {
+        id: `f_ex_2_${Date.now()}`,
+        name: 'Automated CSV Export',
+        description: 'Scheduled background export of RICE scorecards and roadmap swimlanes to CSV/Excel.',
+        category: 'Analytics',
+      },
+      {
+        id: `f_ex_3_${Date.now()}`,
+        name: 'Custom Webhook Triggers',
+        description: 'Real-time webhooks notifying Jira and Slack when feature priority levels change.',
+        category: 'Infrastructure',
+      },
+    ]);
+    setError('');
+    setStatusMessage('3 example features loaded into workspace.');
+  }
+
   function handleResetForm() {
     const isDirty = features.some((f) => f.name.trim() || f.description.trim());
     if (isDirty) {
@@ -402,8 +427,19 @@ export default function AnalyzePage() {
       <main className={styles.main}>
         <section className={styles.inputSection} onKeyDown={handleInputKeyDown}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Your Features</h2>
-            <span className={styles.featureCount}>{filledCount}/{features.length} filled</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <h2 className={styles.sectionTitle}>Your Features</h2>
+              <span className={styles.featureCount}>{filledCount}/{features.length} filled</span>
+            </div>
+            <button
+              onClick={handleLoadExamples}
+              className="btn-ghost"
+              style={{ padding: '6px 14px', fontSize: '12px' }}
+              aria-label="Load sample features into workspace"
+              title="Populate form with sample feature data"
+            >
+              ✨ Load Example Features
+            </button>
           </div>
 
           <div className={styles.featureList}>
