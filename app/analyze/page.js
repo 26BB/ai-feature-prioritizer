@@ -24,21 +24,26 @@ const makeEmptyFeature = () => ({
   category: 'AI/ML',
 });
 
-// Bolt optimization: Single-pass formatted string creation + in-place string array sorting reduces garbage collection pressure & allocations by ~50%
+// Bolt optimization: Single-pass inline string hashing avoids extra intermediate string allocations (.join('||'))
 function generateCacheKey(features) {
-  const formatted = new Array(features.length);
+  const items = new Array(features.length);
   for (let i = 0; i < features.length; i++) {
     const f = features[i];
-    formatted[i] = `${f.name.trim().toLowerCase()}|${(f.description || '').trim().toLowerCase()}|${f.category}`;
+    items[i] = `${f.name.trim().toLowerCase()}|${(f.description || '').trim().toLowerCase()}|${f.category}`;
   }
-  formatted.sort();
-  const serialized = formatted.join('||');
+  items.sort();
 
   let hash = 0;
-  for (let i = 0; i < serialized.length; i++) {
-    const char = serialized.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
+  for (let i = 0; i < items.length; i++) {
+    const str = items[i];
+    if (i > 0) {
+      // 124 is ASCII for '|', hashing '||' delimiter without string concat
+      hash = ((hash << 5) - hash + 124) | 0;
+      hash = ((hash << 5) - hash + 124) | 0;
+    }
+    for (let j = 0; j < str.length; j++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(j)) | 0;
+    }
   }
   return 'rice_cache_' + Math.abs(hash).toString(36);
 }
