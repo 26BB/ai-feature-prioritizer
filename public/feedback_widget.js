@@ -8,11 +8,17 @@
   const capturedErrors = [];
   const MAX_ERRORS = 10;
 
+  // Security: Redact API keys in console/window error logs to prevent credential leakage (CWE-532)
+  const API_KEY_PATTERNS = /(?:sk-|gsk_|nvapi-|AIzaSy)[a-zA-Z0-9_\-=]{8,}/gi;
+  function sanitizeErrorMsg(msg) {
+    return String(msg || '').replace(API_KEY_PATTERNS, '[REDACTED_KEY]');
+  }
+
   window.addEventListener('error', function (event) {
     // Security: Omit full stack trace to prevent internal application structure or sensitive local file path leakage (CWE-209 / CWE-497)
     capturedErrors.push({
       type: 'uncaught_error',
-      message: event.message,
+      message: sanitizeErrorMsg(event.message),
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
@@ -23,9 +29,10 @@
 
   const originalConsoleError = console.error;
   console.error = function (...args) {
+    const rawMsg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
     capturedErrors.push({
       type: 'console_error',
-      message: args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '),
+      message: sanitizeErrorMsg(rawMsg),
       time: new Date().toISOString()
     });
     if (capturedErrors.length > MAX_ERRORS) capturedErrors.shift();

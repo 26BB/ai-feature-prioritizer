@@ -27,3 +27,7 @@
 **Vulnerability:** External LLM completions could return arbitrary `rice_score` values (e.g., negative or extreme numbers), bypassing sanitized RICE framework parameters (`reach`, `impact`, `confidence`, `effort`).
 **Learning:** Checking `Number.isFinite(item.rice_score)` without validating mathematical consistency allowed untrusted AI responses or prompt injection payloads to override computed RICE scores and corrupt sorting and UI rendering.
 **Prevention:** Always calculate dependent composite metrics deterministically from validated formula components rather than trusting model-provided composite fields.
+## 2025-05-24 - Client-Side Error Telemetry Credential Leakage in Feedback Collector
+**Vulnerability:** `window.onerror` and `console.error` handlers in client-side telemetry scripts (such as feedback widgets) captured unmasked error strings containing BYOK API keys or server tokens and transmitted them in telemetry payloads to external webhooks (CWE-532).
+**Learning:** Intercepting raw `console.error` and global window exceptions for client telemetry or feedback reporting without sanitization risks harvesting sensitive user or BYOK credentials when network failures or API key errors throw exceptions.
+**Prevention:** Apply strict API key/token redaction regexes to all captured client error messages and console streams before appending them to telemetry queues or webhooks.
