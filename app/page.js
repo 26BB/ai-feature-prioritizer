@@ -42,8 +42,8 @@ export default function LandingHome() {
             onClick={() => setIsModalOpen(true)}
             className={pageStyles.navLink}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-            aria-label="Open settings and BYOK modal"
-            title="Open settings and BYOK modal"
+            aria-label="Open Settings and BYOK modal"
+            title="Open Settings and BYOK modal"
           >
             ⚙️ Settings & BYOK
           </button>
