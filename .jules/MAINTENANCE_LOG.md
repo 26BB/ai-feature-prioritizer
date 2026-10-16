@@ -11,12 +11,17 @@
 | Date Found | Category | File | Issue | Priority |
 |------------|----------|------|-------|----------|
 | 2026-10-15 | ⚡ Perf | app/analyze/page.js | Optimize generateCacheKey hash calculation (PR #93 had conflicts) | MEDIUM |
-| 2026-10-15 | 🛡️ Security | public/feedback_widget.js | Fix sensitive API key leakage in feedback widget console telemetry (PR #94 had conflicts) | HIGH |
 | 2026-10-15 | 🎨 A11y | app/analyze/page.js, app/page.js | Enhance workspace form validation and accessibility (PR #97 had conflicts) | MEDIUM |
 
 ---
 
 ## ✅ Completed Log (most recent first)
+
+### 2026-10-16 — Fix API key leakage in feedback widget telemetry
+**Status:** ✅ Fixed in current run
+**Fixed:**
+- 🛡️ Redact sensitive API key patterns (`sk-`, `gsk_`, `nvapi-`, `AIzaSy`) from `uncaught_error` and `console_error` telemetry messages in `public/feedback_widget.js` (CWE-532).
+**PR:** Pending
 
 ### 2026-10-15 — Initial Logbook + Jules Master Bulk Merge
 **Status:** ✅ Bulk merge by Jules Master

@@ -4,6 +4,16 @@
  */
 
 (function () {
+  // Security: Redact API keys and credential patterns in telemetry logs to prevent key leaks (CWE-532)
+  const API_KEY_PATTERNS = /(?:sk-|gsk_|nvapi-|AIzaSy)[a-zA-Z0-9_\-=]{8,}/gi;
+
+  function sanitizeConsoleData(data) {
+    if (typeof data === 'string') {
+      return data.replace(API_KEY_PATTERNS, '[REDACTED_KEY]');
+    }
+    return data;
+  }
+
   // 1. Silent Console & Exception Logger
   const capturedErrors = [];
   const MAX_ERRORS = 10;
@@ -12,7 +22,7 @@
     // Security: Omit full stack trace to prevent internal application structure or sensitive local file path leakage (CWE-209 / CWE-497)
     capturedErrors.push({
       type: 'uncaught_error',
-      message: event.message,
+      message: sanitizeConsoleData(event.message),
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
@@ -25,7 +35,7 @@
   console.error = function (...args) {
     capturedErrors.push({
       type: 'console_error',
-      message: args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '),
+      message: sanitizeConsoleData(args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ')),
       time: new Date().toISOString()
     });
     if (capturedErrors.length > MAX_ERRORS) capturedErrors.shift();
