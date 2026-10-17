@@ -8,8 +8,8 @@
   const capturedErrors = [];
   const MAX_ERRORS = 10;
 
-  // Security: Redact API keys in console/window error logs to prevent credential leakage (CWE-532)
-  const API_KEY_PATTERNS = /(?:sk-|gsk_|nvapi-|AIzaSy)[a-zA-Z0-9_\-=]{8,}/gi;
+  // Security: Redact API keys, tokens, and authorization headers in error logs to prevent credential leakage (CWE-532)
+  const API_KEY_PATTERNS = /(?:sk-|gsk_|nvapi-|AIzaSy|bearer\s+)[a-zA-Z0-9_\-=]{8,}|(?:key|token|secret|auth)=['"]?[a-zA-Z0-9_\-=]{8,}['"]?/gi;
   function sanitizeErrorMsg(msg) {
     return String(msg || '').replace(API_KEY_PATTERNS, '[REDACTED_KEY]');
   }
@@ -29,7 +29,13 @@
 
   const originalConsoleError = console.error;
   console.error = function (...args) {
-    const rawMsg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+    // Security & Resilience: Safe stringification prevents circular reference crashes while sanitizing logged objects
+    const rawMsg = args.map(a => {
+      if (typeof a === 'object' && a !== null) {
+        try { return JSON.stringify(a); } catch (_) { return String(a); }
+      }
+      return String(a);
+    }).join(' ');
     capturedErrors.push({
       type: 'console_error',
       message: sanitizeErrorMsg(rawMsg),
