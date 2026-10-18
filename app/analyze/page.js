@@ -55,7 +55,10 @@ const FeatureCard = memo(function FeatureCard({
   canRemove,
   onRemove,
   onUpdate,
+  showError,
 }) {
+  const isInvalid = Boolean(showError && !feature.name?.trim());
+
   return (
     <div className={`${styles.featureCard} glass-card`}>
       <div className={styles.cardHeader}>
@@ -79,8 +82,8 @@ const FeatureCard = memo(function FeatureCard({
             id={`name-count-${idx}`}
             style={{
               fontSize: '11px',
-              color: (feature.name || '').length >= 90 ? 'var(--danger)' : 'var(--text-muted)',
-              fontWeight: (feature.name || '').length >= 90 ? '700' : '400',
+              color: isInvalid || (feature.name || '').length >= 90 ? 'var(--danger)' : 'var(--text-muted)',
+              fontWeight: isInvalid || (feature.name || '').length >= 90 ? '700' : '400',
               marginBottom: '6px',
             }}
           >
@@ -90,14 +93,21 @@ const FeatureCard = memo(function FeatureCard({
         <input
           id={`name-${idx}`}
           className="input-field"
+          style={isInvalid ? { borderColor: 'var(--danger)' } : undefined}
           placeholder="e.g. AI Auto-complete for search"
           value={feature.name}
           onChange={(e) => onUpdate(idx, 'name', e.target.value)}
           maxLength={100}
           required
           aria-required="true"
-          aria-describedby={`name-count-${idx}`}
+          aria-invalid={isInvalid}
+          aria-describedby={`name-count-${idx}${isInvalid ? ` name-err-${idx}` : ''}`}
         />
+        {isInvalid && (
+          <span id={`name-err-${idx}`} style={{ fontSize: '11px', color: 'var(--danger)', marginTop: '4px', display: 'block' }}>
+            Feature name is required.
+          </span>
+        )}
       </div>
 
       <div className={styles.fieldGroup}>
@@ -153,6 +163,7 @@ export default function AnalyzePage() {
   const [features, setFeatures] = useState(() => [makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showValidation, setShowValidation] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -204,6 +215,7 @@ export default function AnalyzePage() {
         category: 'Infrastructure',
       },
     ]);
+    setShowValidation(false);
     setError('');
     setStatusMessage('3 example features loaded into workspace.');
   }
@@ -216,6 +228,7 @@ export default function AnalyzePage() {
       }
     }
     setFeatures([makeEmptyFeature(), makeEmptyFeature(), makeEmptyFeature()]);
+    setShowValidation(false);
     setError('');
   }
 
@@ -234,17 +247,19 @@ export default function AnalyzePage() {
   }, []);
 
   async function handleAnalyze() {
-    const valid = features.filter((f) => f.name.trim());
+    setShowValidation(true);
+    const invalidIdx = features.findIndex((f) => !f.name.trim());
 
-    if (valid.length === 0) {
-      setError('Please add at least one feature name.');
-      const firstInput = document.getElementById('name-0');
-      if (firstInput) {
-        firstInput.focus();
+    if (invalidIdx !== -1) {
+      setError('Please provide a feature name for all card entries or remove empty cards.');
+      const invalidInput = document.getElementById(`name-${invalidIdx}`);
+      if (invalidInput) {
+        invalidInput.focus();
       }
       return;
     }
 
+    const valid = features;
     setError('');
 
     const cacheKey = generateCacheKey(valid);
@@ -478,6 +493,7 @@ export default function AnalyzePage() {
                 canRemove={features.length > 1}
                 onRemove={removeFeature}
                 onUpdate={updateFeature}
+                showError={showValidation}
               />
             ))}
           </div>
