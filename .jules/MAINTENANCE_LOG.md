@@ -10,12 +10,16 @@
 
 | Date Found | Category | File | Issue | Priority |
 |------------|----------|------|-------|----------|
-| 2026-10-15 | ⚡ Perf | app/analyze/page.js | Optimize generateCacheKey hash calculation (PR #93 had conflicts) | MEDIUM |
-| 2026-10-15 | 🎨 A11y | app/analyze/page.js, app/page.js | Enhance workspace form validation and accessibility (PR #97 had conflicts) | MEDIUM |
 
 ---
 
 ## ✅ Completed Log (most recent first)
+
+### 2026-10-18 — Enhance Workspace Form Validation and Accessibility
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- 🎨 Add visual error state highlights, `aria-invalid`, `aria-describedby` helper texts, and focus management to the workspace form in `app/analyze/page.js`.
+**PR:** `chore(atlas): enhance workspace form validation and accessibility [2026-10-18]`
 
 ### 2026-10-17 — Fix Feedback Widget API Key Telemetry Leakage
 **Status:** ✅ Completed by ATLAS
