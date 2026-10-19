@@ -15,6 +15,12 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-19 — Add Unit Tests for Scoring & Utility Logic
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- 🧪 Added `test/scoring.test.js` covering `calcRice`, `sanitizeCsvCell`, `groupBySprint`, `getSprintBadgeClass`, and `getScoreColor` using native Node test runner.
+**PR:** `chore(atlas): add unit tests for scoring and utility logic [2026-10-19]`
+
 ### 2026-10-18 — Enhance Workspace Form Validation and Accessibility
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
