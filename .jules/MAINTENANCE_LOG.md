@@ -15,6 +15,12 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-20 — Refactor RICE Score Calculations to Use Centralized Utility
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Centralized inline RICE score calculations across `lib/llmProviders.js` and updated unit test script `scratch/check-scoring.mjs` to import directly from `lib/scoring.js`.
+**PR:** `chore(atlas): refactor RICE score calculations to use centralized utility [2026-10-20]`
+
 ### 2026-10-18 — Enhance Workspace Form Validation and Accessibility
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
