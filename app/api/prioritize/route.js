@@ -1,4 +1,4 @@
-import { prioritizeFeatures } from '@/lib/llmProviders';
+import { prioritizeFeatures, sanitizeLogMsg } from '@/lib/llmProviders';
 
 // Security: In-memory sliding window rate limiter (CWE-770) to protect LLM API tokens and prevent DoS
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
@@ -124,8 +124,8 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid JSON request payload' }, { status: 400 });
     }
 
-    // Security: Log actual error details internally, return sanitized message to client to prevent info leakage
-    console.error('Prioritize API error:', error);
+    // Security: Redact user & server API keys from error logs to prevent credential leakage in log streams (CWE-532)
+    console.error('Prioritize API error:', sanitizeLogMsg(error, userApiKey));
 
     return Response.json(
       { error: 'An unexpected error occurred while processing your request' },
