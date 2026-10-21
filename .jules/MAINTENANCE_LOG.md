@@ -15,6 +15,12 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-18 — Fix API Key Leakage in Prioritize API Logs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- 🛡️ Redact BYOK header API keys, server provider environment keys, and credential regex patterns in `lib/llmProviders.js` and `app/api/prioritize/route.js` error logging (CWE-532). Added unit tests in `test/llmProviders.test.js`.
+**PR:** `chore(atlas): fix API key leakage in prioritize API logs [2026-10-18]`
+
 ### 2026-10-18 — Enhance Workspace Form Validation and Accessibility
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
@@ -38,7 +44,6 @@
 - 🎨 Add 1-click sample feature loader to workspace (#91)
 **Deferred to backlog:**
 - PR #93 (Bolt: hash calculation) — merge conflicts
-- PR #94 (Sentinel: API key leakage) — merge conflicts ⚠️ HIGH PRIORITY
 - PR #97 (Palette: form validation) — merge conflicts
 **PR:** #90–98 (squash merged by Jules Master)
 
