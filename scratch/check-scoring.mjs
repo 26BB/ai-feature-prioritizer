@@ -6,18 +6,7 @@
  * Zero runtime dependencies.
  */
 
-// ─── Inline copies (avoids ESM import path complexity in scratch) ──────────────
-function calcRice({ reach, impact, confidence, effort }) {
-  return Math.round((reach * impact * confidence) / effort);
-}
-
-function groupBySprint(features) {
-  return {
-    NOW:   features.filter((f) => f.sprint?.toUpperCase() === 'NOW'),
-    NEXT:  features.filter((f) => f.sprint?.toUpperCase() === 'NEXT'),
-    LATER: features.filter((f) => !['NOW', 'NEXT'].includes(f.sprint?.toUpperCase())),
-  };
-}
+import { calcRice, groupBySprint } from '../lib/scoring.js';
 
 // ─── Assertions ───────────────────────────────────────────────────────────────
 let passed = 0;
