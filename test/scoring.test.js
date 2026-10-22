@@ -15,6 +15,18 @@ test('calcRice calculates rounded RICE score correctly', () => {
   assert.equal(calcRice({ reach: 1, impact: 1, confidence: 33, effort: 3 }), 11);
 });
 
+test('calcRice safely handles zero, negative, missing, or non-numeric inputs', () => {
+  // Zero or negative effort defaults to 1 (prevents division by zero or negative score)
+  assert.equal(calcRice({ reach: 10, impact: 10, confidence: 80, effort: 0 }), 8000);
+  assert.equal(calcRice({ reach: 10, impact: 10, confidence: 80, effort: -2 }), 8000);
+
+  // Missing or non-finite components default safely
+  assert.equal(calcRice({ reach: 10, impact: 10, confidence: 80 }), 8000);
+  assert.equal(calcRice({ reach: '10', impact: '10', confidence: '80', effort: '2' }), 4000);
+  assert.equal(calcRice({ reach: NaN, impact: undefined, confidence: null, effort: NaN }), 0);
+  assert.equal(calcRice(), 0);
+});
+
 test('sanitizeCsvCell prevents CSV Formula Injection (CWE-1236) and escapes double quotes', () => {
   // Normal text
   assert.equal(sanitizeCsvCell('Feature A'), '"Feature A"');

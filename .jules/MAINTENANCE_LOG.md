@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-21 — Sanitize RICE Score Inputs to Prevent Division by Zero
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- 🛡️ Sanitized inputs and effort parameter safeguards in `lib/scoring.js` (`calcRice`) to prevent division by zero (CWE-369), `Infinity`, `NaN`, or negative scores when `effort` is missing, zero, negative, or non-finite.
+- 🧪 Added comprehensive unit tests in `test/scoring.test.js` covering `calcRice` edge cases.
+**PR:** `chore(atlas): sanitize RICE score inputs to prevent division by zero [2026-10-21]`
+
 ### 2026-10-19 — Add Unit Tests for Scoring & Utility Logic
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
