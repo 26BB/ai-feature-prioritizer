@@ -1,4 +1,4 @@
-import { prioritizeFeatures, sanitizeLogMsg } from '@/lib/llmProviders';
+import { prioritizeFeatures, sanitizeLogMsg } from '../../../lib/llmProviders.js';
 
 // Security: In-memory sliding window rate limiter (CWE-770) to protect LLM API tokens and prevent DoS
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
@@ -38,6 +38,7 @@ const MAX_CAT_LENGTH = 100;
 const ALLOWED_PROVIDERS = new Set(['auto', 'gemini', 'openai', 'groq', 'nvidia']);
 
 export async function POST(request) {
+  let userApiKey = '';
   try {
     // Security: Extract client IP address for rate limiting
     const clientIp = (
@@ -109,7 +110,7 @@ export async function POST(request) {
       return Response.json({ error: 'API key exceeds maximum permitted length (256 characters)' }, { status: 400 });
     }
     // Security: Strip all control characters (0x00-0x1F, 0x7F) from API key header to prevent header injection/pollution
-    const userApiKey = rawApiKey.replace(/[\x00-\x1F\x7F]/g, '').trim();
+    userApiKey = rawApiKey.replace(/[\x00-\x1F\x7F]/g, '').trim();
 
     const { features: scoredFeatures, source } = await prioritizeFeatures({
       features: sanitizedFeatures,
