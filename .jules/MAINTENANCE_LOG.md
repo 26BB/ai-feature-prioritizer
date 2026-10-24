@@ -15,6 +15,12 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-24 — Prevent Division by Zero and Invalid Inputs in calcRice
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Safeguarded `calcRice` in `lib/scoring.js` against non-positive effort values (`effort <= 0`), non-finite numerical inputs, missing/null parameters, and empty argument destructuring. Added comprehensive unit tests in `test/scoring.test.js`.
+**PR:** `chore(atlas): prevent division by zero and invalid inputs in calcRice [2026-10-24]`
+
 ### 2026-10-21 — Fix ReferenceError in Prioritize API Route Error Handler
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
