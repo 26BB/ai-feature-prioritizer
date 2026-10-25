@@ -59,6 +59,9 @@ export async function POST(request) {
     }
 
     const body = await request.json();
+    if (!body || typeof body !== 'object') {
+      return Response.json({ error: 'Invalid JSON request payload' }, { status: 400 });
+    }
     const { features } = body;
 
     if (!features || !Array.isArray(features) || features.length === 0) {
