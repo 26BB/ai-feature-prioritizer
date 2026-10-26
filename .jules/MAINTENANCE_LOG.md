@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-26 — Safeguard calculateFallbackRice Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added robust input validation in `calculateFallbackRice` (`lib/llmProviders.js`) for non-array arguments, null/undefined feature items, and missing or non-string properties (`name`, `category`, `description`).
+- Added unit tests in `test/llmProviders.test.js` covering calculation, sorting, and malformed input handling.
+**PR:** `chore(atlas): safeguard calculateFallbackRice against invalid inputs [2026-10-26]`
+
 ### 2026-10-24 — Prevent Division by Zero and Invalid Inputs in calcRice
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
