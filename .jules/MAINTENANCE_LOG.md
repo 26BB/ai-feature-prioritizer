@@ -15,6 +15,12 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-25 — Handle Null and Non-Object JSON Payloads Gracefully in Prioritize Route
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- 🛡️ Safeguarded `POST /api/prioritize` in `app/api/prioritize/route.js` against `null` or non-object JSON request bodies. Added validation to return an explicit HTTP 400 Bad Request (`Invalid JSON request payload`) instead of throwing an unhandled `TypeError` during destructuring that leads to an HTTP 500 error. Added unit tests in `test/prioritizeRoute.test.js`.
+**PR:** `chore(atlas): handle null and non-object JSON payloads gracefully in prioritize route [2026-10-25]`
+
 ### 2026-10-24 — Prevent Division by Zero and Invalid Inputs in calcRice
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

@@ -15,6 +15,19 @@ test('POST /api/prioritize handles malformed JSON request gracefully', async () 
   assert.strictEqual(data.error, 'Invalid JSON request payload');
 });
 
+test('POST /api/prioritize handles null or non-object JSON payload gracefully', async () => {
+  const req = new Request('http://localhost/api/prioritize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: 'null',
+  });
+
+  const res = await POST(req);
+  assert.strictEqual(res.status, 400);
+  const data = await res.json();
+  assert.strictEqual(data.error, 'Invalid JSON request payload');
+});
+
 test('POST /api/prioritize handles invalid feature payload without scope error', async () => {
   const req = new Request('http://localhost/api/prioritize', {
     method: 'POST',
