@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-27 — Safeguard sortByRice Against Non-Array Inputs and Invalid RICE Scores
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added defensive input validation and parsing in `sortByRice` (`lib/scoring.js`) for non-array inputs, null/undefined feature items, and missing or non-finite `rice_score` values to prevent runtime `TypeError` exceptions during array sorting.
+- Added unit tests in `test/scoring.test.js` covering descending sorting, non-array inputs, null/undefined elements, and non-numeric `rice_score` properties.
+**PR:** `chore(atlas): safeguard sortByRice against non-array inputs and invalid RICE scores [2026-10-27]`
+
 ### 2026-10-26 — Safeguard calculateFallbackRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

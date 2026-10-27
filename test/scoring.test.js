@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   calcRice,
   sanitizeCsvCell,
+  sortByRice,
   groupBySprint,
   getSprintBadgeClass,
   getScoreColor,
@@ -21,6 +22,33 @@ test('calcRice handles zero/negative effort, missing inputs, and non-numeric val
   assert.equal(calcRice({ reach: 10, impact: 'invalid', confidence: 100, effort: 2 }), 0);
   assert.equal(calcRice({ reach: null, impact: 5, confidence: 80, effort: 3 }), 0);
   assert.equal(calcRice(), 0);
+});
+
+test('sortByRice sorts features by RICE score descending and handles edge cases safely', () => {
+  const features = [
+    { name: 'Feat A', rice_score: 100 },
+    { name: 'Feat B', rice_score: 500 },
+    { name: 'Feat C', rice_score: 250 },
+  ];
+
+  const sorted = sortByRice(features);
+
+  assert.deepEqual(
+    sorted.map((f) => f.name),
+    ['Feat B', 'Feat C', 'Feat A']
+  );
+
+  // Immutability check
+  assert.notEqual(sorted, features);
+  assert.equal(features[0].name, 'Feat A');
+
+  // Edge cases: non-array, null/undefined elements, missing or non-numeric rice_score
+  assert.deepEqual(sortByRice(null), []);
+  assert.deepEqual(sortByRice('not an array'), []);
+  const mixedInput = [null, undefined, { name: 'Valid', rice_score: 10 }, { name: 'Invalid', rice_score: 'bad' }];
+  const sortedMixed = sortByRice(mixedInput);
+  assert.equal(sortedMixed[0].name, 'Valid');
+  assert.equal(sortedMixed.length, 4);
 });
 
 test('sanitizeCsvCell prevents CSV Formula Injection (CWE-1236) and escapes double quotes', () => {
