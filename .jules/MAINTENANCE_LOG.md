@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-27 — Safeguard saveSessionToHistory Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Extracted and exported `formatSessionHistoryPayload` in `context/AuthContext.js` with comprehensive input validation for `sessionData` objects, non-array `features` payloads, missing titles, and malformed stats.
+- Added unit tests in `test/authContext.test.js` covering error handling and payload formatting edge cases.
+**PR:** `chore(atlas): safeguard saveSessionToHistory against invalid inputs [2026-10-27]`
+
 ### 2026-10-26 — Safeguard calculateFallbackRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

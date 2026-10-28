@@ -44,6 +44,49 @@ function hashString(str) {
   return Math.abs(hash).toString(36);
 }
 
+/**
+ * Format and sanitize session data for Firestore or mock history storage.
+ * @param {{ uid: string }} user
+ * @param {object} sessionData
+ * @returns {{ title: string, features: Array, featureCount: number, topFeature: string, topRice: number, model: string }}
+ */
+export function formatSessionHistoryPayload(user, sessionData) {
+  if (!user) {
+    throw new Error('You must be logged in to save prioritization history.');
+  }
+
+  if (!sessionData || typeof sessionData !== 'object') {
+    throw new Error('Invalid session data provided.');
+  }
+
+  // Security: Validate user.uid to prevent Firestore path traversal attacks (CWE-22)
+  if (typeof user?.uid !== 'string' || !user.uid || !/^[a-zA-Z0-9_-]+$/.test(user.uid)) {
+    throw new Error('Invalid user account ID.');
+  }
+
+  const features = Array.isArray(sessionData.features) ? sessionData.features : [];
+
+  const title =
+    typeof sessionData.title === 'string' && sessionData.title.trim()
+      ? sessionData.title.trim()
+      : features[0]?.name
+      ? `${features[0].name}${features.length > 1 ? ` +${features.length - 1} more` : ''}`
+      : 'Feature Prioritization';
+
+  const topFeature = typeof features[0]?.name === 'string' ? features[0].name : 'N/A';
+  const topRice = typeof features[0]?.rice_score === 'number' ? features[0].rice_score : 0;
+  const model = sessionData.model || 'meta/llama-3.3-70b-instruct';
+
+  return {
+    title,
+    features,
+    featureCount: features.length,
+    topFeature,
+    topRice,
+    model,
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -218,33 +261,12 @@ export function AuthProvider({ children }) {
   // ─── Database History Methods (Bolt optimization: memoized callbacks prevent redundant history fetches) ───
 
   const saveSessionToHistory = useCallback(async (sessionData) => {
-    if (!user) {
-      throw new Error('You must be logged in to save prioritization history.');
-    }
-
-    // Security: Validate user.uid to prevent Firestore path traversal attacks (CWE-22)
-    if (typeof user?.uid !== 'string' || !user.uid || !/^[a-zA-Z0-9_-]+$/.test(user.uid)) {
-      throw new Error('Invalid user account ID.');
-    }
-
-    const title =
-      sessionData.title ||
-      (sessionData.features?.[0]?.name
-        ? `${sessionData.features[0].name}${sessionData.features.length > 1 ? ` +${sessionData.features.length - 1} more` : ''}`
-        : 'Feature Prioritization');
-
-    const topFeature = sessionData.features?.[0]?.name || 'N/A';
-    const topRice = sessionData.features?.[0]?.rice_score || 0;
+    const payload = formatSessionHistoryPayload(user, sessionData);
 
     if (isFirebaseConfigured && db) {
       const historyCol = collection(db, 'users', user.uid, 'history');
       const docRef = await addDoc(historyCol, {
-        title,
-        features: sessionData.features || [],
-        featureCount: sessionData.features?.length || 0,
-        topFeature,
-        topRice,
-        model: sessionData.model || 'meta/llama-3.3-70b-instruct',
+        ...payload,
         createdAt: serverTimestamp(),
       });
       return docRef.id;
@@ -254,12 +276,7 @@ export function AuthProvider({ children }) {
       const newItem = {
         id: 'hist_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
         userId: user.uid,
-        title,
-        features: sessionData.features || [],
-        featureCount: sessionData.features?.length || 0,
-        topFeature,
-        topRice,
-        model: sessionData.model || 'meta/llama-3.3-70b-instruct',
+        ...payload,
         createdAt: new Date().toISOString(),
       };
       mockHistory.unshift(newItem);
