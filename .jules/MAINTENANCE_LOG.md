@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-27 — Safeguard Prompt Builder and Cache Key Generator Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added robust input validation in `buildRicePrompt` (`lib/prompts.js`) and `generateCacheKey` (`app/analyze/page.js`) for non-array arguments, null/undefined feature items, and missing or non-string feature properties (`name`, `description`, `category`).
+- Added unit tests in `test/prompts.test.js` covering valid prompt generation, null/undefined inputs, malformed feature items, and prompt injection/sanitization rules.
+**PR:** `chore(atlas): safeguard prompt builder and cache key generator against invalid inputs [2026-10-27]`
+
 ### 2026-10-26 — Safeguard calculateFallbackRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
