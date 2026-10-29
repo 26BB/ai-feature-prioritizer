@@ -26,10 +26,14 @@ const makeEmptyFeature = () => ({
 
 // Bolt optimization: Single-pass inline string hashing avoids extra intermediate string allocations (.join('||'))
 function generateCacheKey(features) {
-  const items = new Array(features.length);
-  for (let i = 0; i < features.length; i++) {
-    const f = features[i];
-    items[i] = `${f.name.trim().toLowerCase()}|${(f.description || '').trim().toLowerCase()}|${f.category}`;
+  const list = Array.isArray(features) ? features : [];
+  const items = new Array(list.length);
+  for (let i = 0; i < list.length; i++) {
+    const f = list[i] && typeof list[i] === 'object' ? list[i] : {};
+    const name = typeof f.name === 'string' ? f.name.trim().toLowerCase() : '';
+    const desc = typeof f.description === 'string' ? f.description.trim().toLowerCase() : '';
+    const cat = typeof f.category === 'string' ? f.category : '';
+    items[i] = `${name}|${desc}|${cat}`;
   }
   items.sort();
 
