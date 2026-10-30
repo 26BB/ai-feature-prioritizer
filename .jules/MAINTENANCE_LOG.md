@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added robust input validation in `sortByRice` (`lib/scoring.js`) for non-array arguments, `null`/`undefined` feature items, and non-numeric or missing `rice_score` values.
+- Added comprehensive unit tests in `test/scoring.test.js` verifying sorting order, non-mutation of input array, and graceful handling of non-array or malformed inputs.
+**PR:** `chore(atlas): safeguard sortByRice against invalid inputs [2026-10-27]`
+
 ### 2026-10-27 — Safeguard Prompt Builder and Cache Key Generator Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
