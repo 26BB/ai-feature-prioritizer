@@ -28,7 +28,7 @@ function getSprintCounts(features) {
         now++;
       } else if (rawSprint === 'NEXT') {
         next++;
-      } else if (rawSprint) {
+      } else if (typeof rawSprint === 'string') {
         const sprint = rawSprint.toUpperCase();
         if (sprint === 'NOW') now++;
         else if (sprint === 'NEXT') next++;
