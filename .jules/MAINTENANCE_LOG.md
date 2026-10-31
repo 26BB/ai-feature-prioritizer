@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-28 — Safeguard Sprint Grouping and Badge Utilities Against Non-String Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Safeguarded `groupBySprint`, `getSprintBadgeClass`, `getSprintColor`, and `getScoreColor` in `lib/scoring.js` and `getSprintCounts` in `app/history/page.js` against non-string sprint values (numbers, booleans, objects) and non-finite scores, preventing runtime `TypeError: .toUpperCase is not a function`.
+- Added unit tests in `test/scoring.test.js` validating that non-string sprint values, null/undefined arguments, and non-finite numbers default safely to `'LATER'` and fallback badge/color styles.
+**PR:** `chore(atlas): safeguard sprint helpers and score utilities against non-string inputs [2026-10-28]`
+
 ### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

@@ -95,9 +95,14 @@ test('groupBySprint groups features into NOW, NEXT, LATER in a single pass', () 
   assert.deepEqual(grouped.NEXT.map((f) => f.name), ['Feat 3', 'Feat 4']);
   assert.deepEqual(grouped.LATER.map((f) => f.name), ['Feat 5', 'Feat 6', 'Feat 7']);
 
-  // Edge cases
+  // Edge cases & malformed / non-string sprint values
   assert.deepEqual(groupBySprint(null), { NOW: [], NEXT: [], LATER: [] });
   assert.deepEqual(groupBySprint([]), { NOW: [], NEXT: [], LATER: [] });
+  assert.deepEqual(groupBySprint([{ sprint: 123 }, { sprint: {} }, { sprint: true }]), {
+    NOW: [],
+    NEXT: [],
+    LATER: [{ sprint: 123 }, { sprint: {} }, { sprint: true }],
+  });
 });
 
 test('getSprintBadgeClass returns correct CSS badge class name', () => {
@@ -109,6 +114,23 @@ test('getSprintBadgeClass returns correct CSS badge class name', () => {
   assert.equal(getSprintBadgeClass('later'), 'badge-later');
   assert.equal(getSprintBadgeClass('INVALID'), 'badge-later');
   assert.equal(getSprintBadgeClass(null), 'badge-later');
+  assert.equal(getSprintBadgeClass(undefined), 'badge-later');
+  assert.equal(getSprintBadgeClass(123), 'badge-later');
+  assert.equal(getSprintBadgeClass({}), 'badge-later');
+});
+
+test('getSprintColor returns expected CSS hex color and handles invalid inputs', async () => {
+  const { getSprintColor } = await import('../lib/scoring.js');
+  assert.equal(getSprintColor('NOW'), '#10b981');
+  assert.equal(getSprintColor('now'), '#10b981');
+  assert.equal(getSprintColor('NEXT'), '#f59e0b');
+  assert.equal(getSprintColor('next'), '#f59e0b');
+  assert.equal(getSprintColor('LATER'), '#78716c');
+  assert.equal(getSprintColor('later'), '#78716c');
+  assert.equal(getSprintColor(null), '#78716c');
+  assert.equal(getSprintColor(undefined), '#78716c');
+  assert.equal(getSprintColor(123), '#78716c');
+  assert.equal(getSprintColor({}), '#78716c');
 });
 
 test('getScoreColor returns expected hex color for score threshold', () => {
@@ -118,4 +140,11 @@ test('getScoreColor returns expected hex color for score threshold', () => {
   assert.equal(getScoreColor(400, 1000), '#f97316');
   // Low score
   assert.equal(getScoreColor(200, 1000), '#f43f5e');
+
+  // Edge cases & invalid inputs
+  assert.equal(getScoreColor(NaN, 1000), '#f43f5e');
+  assert.equal(getScoreColor('invalid', 1000), '#f43f5e');
+  assert.equal(getScoreColor(500, 0), '#f43f5e');
+  assert.equal(getScoreColor(500, -100), '#f43f5e');
+  assert.equal(getScoreColor(null), '#f43f5e');
 });
