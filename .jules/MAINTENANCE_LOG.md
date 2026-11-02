@@ -15,6 +15,13 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-28 — Safeguard Sprint Grouping and Badge Utilities Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added type validation in `groupBySprint`, `getSprintBadgeClass`, and `getSprintColor` (`lib/scoring.js`) for non-string sprint values (e.g. numeric IDs, booleans, objects) and null/undefined elements, preventing unhandled `TypeError: rawSprint?.toUpperCase is not a function` during UI rendering.
+- Added comprehensive unit tests in `test/scoring.test.js` validating that malformed features and non-string sprint values safely default to `LATER` and fallback badge/color classes.
+**PR:** `chore(atlas): safeguard sprint grouping and badge utilities against invalid inputs [2026-10-28]`
+
 ### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

@@ -6,6 +6,7 @@ import {
   sortByRice,
   groupBySprint,
   getSprintBadgeClass,
+  getSprintColor,
   getScoreColor,
 } from '../lib/scoring.js';
 
@@ -98,6 +99,19 @@ test('groupBySprint groups features into NOW, NEXT, LATER in a single pass', () 
   // Edge cases
   assert.deepEqual(groupBySprint(null), { NOW: [], NEXT: [], LATER: [] });
   assert.deepEqual(groupBySprint([]), { NOW: [], NEXT: [], LATER: [] });
+
+  // Malformed features and non-string sprint values safely default to LATER
+  const malformedList = [
+    null,
+    undefined,
+    { name: 'Feat Numeric Sprint', sprint: 123 },
+    { name: 'Feat Boolean Sprint', sprint: true },
+    { name: 'Feat Object Sprint', sprint: {} },
+  ];
+  const malformedGrouped = groupBySprint(malformedList);
+  assert.equal(malformedGrouped.NOW.length, 0);
+  assert.equal(malformedGrouped.NEXT.length, 0);
+  assert.equal(malformedGrouped.LATER.length, 5);
 });
 
 test('getSprintBadgeClass returns correct CSS badge class name', () => {
@@ -109,6 +123,25 @@ test('getSprintBadgeClass returns correct CSS badge class name', () => {
   assert.equal(getSprintBadgeClass('later'), 'badge-later');
   assert.equal(getSprintBadgeClass('INVALID'), 'badge-later');
   assert.equal(getSprintBadgeClass(null), 'badge-later');
+  assert.equal(getSprintBadgeClass(undefined), 'badge-later');
+  assert.equal(getSprintBadgeClass(123), 'badge-later');
+  assert.equal(getSprintBadgeClass(true), 'badge-later');
+  assert.equal(getSprintBadgeClass({}), 'badge-later');
+});
+
+test('getSprintColor returns correct hex color for sprint keys and handles invalid inputs', () => {
+  assert.equal(getSprintColor('NOW'), '#10b981');
+  assert.equal(getSprintColor('now'), '#10b981');
+  assert.equal(getSprintColor('NEXT'), '#f59e0b');
+  assert.equal(getSprintColor('next'), '#f59e0b');
+  assert.equal(getSprintColor('LATER'), '#78716c');
+  assert.equal(getSprintColor('later'), '#78716c');
+  assert.equal(getSprintColor('UNKNOWN'), '#78716c');
+  assert.equal(getSprintColor(null), '#78716c');
+  assert.equal(getSprintColor(undefined), '#78716c');
+  assert.equal(getSprintColor(123), '#78716c');
+  assert.equal(getSprintColor(true), '#78716c');
+  assert.equal(getSprintColor({}), '#78716c');
 });
 
 test('getScoreColor returns expected hex color for score threshold', () => {
