@@ -15,6 +15,14 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-11-03 — Safeguard Sprint Classification Helpers Against Non-String Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added type guards in `groupBySprint`, `getSprintBadgeClass`, and `getSprintColor` (`lib/scoring.js`) to ensure sprint inputs are strings before attempting case conversion or mapping.
+- Prevents runtime `TypeError` crashes when malformed, unexpected, or non-string sprint values (such as numbers, objects, booleans, or null elements) are encountered.
+- Added comprehensive unit tests in `test/scoring.test.js` validating that non-string sprint values are gracefully defaulted to `LATER` and badge/color fallbacks without throwing.
+**PR:** `chore(atlas): safeguard sprint classification helpers against non-string inputs [2026-11-03]`
+
 ### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**

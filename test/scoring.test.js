@@ -6,6 +6,7 @@ import {
   sortByRice,
   groupBySprint,
   getSprintBadgeClass,
+  getSprintColor,
   getScoreColor,
 } from '../lib/scoring.js';
 
@@ -75,7 +76,7 @@ test('sanitizeCsvCell prevents CSV Formula Injection (CWE-1236) and escapes doub
   assert.equal(sanitizeCsvCell(undefined), '""');
 });
 
-test('groupBySprint groups features into NOW, NEXT, LATER in a single pass', () => {
+test('groupBySprint groups features into NOW, NEXT, LATER in a single pass and handles non-string sprints safely', () => {
   const features = [
     { name: 'Feat 1', sprint: 'NOW' },
     { name: 'Feat 2', sprint: 'now' },
@@ -84,23 +85,27 @@ test('groupBySprint groups features into NOW, NEXT, LATER in a single pass', () 
     { name: 'Feat 5', sprint: 'LATER' },
     { name: 'Feat 6', sprint: 'unknown' },
     { name: 'Feat 7', sprint: null },
+    { name: 'Feat 8', sprint: 123 },
+    { name: 'Feat 9', sprint: false },
+    { name: 'Feat 10', sprint: {} },
+    null,
   ];
 
   const grouped = groupBySprint(features);
 
   assert.equal(grouped.NOW.length, 2);
   assert.equal(grouped.NEXT.length, 2);
-  assert.equal(grouped.LATER.length, 3);
+  assert.equal(grouped.LATER.length, 7);
   assert.deepEqual(grouped.NOW.map((f) => f.name), ['Feat 1', 'Feat 2']);
   assert.deepEqual(grouped.NEXT.map((f) => f.name), ['Feat 3', 'Feat 4']);
-  assert.deepEqual(grouped.LATER.map((f) => f.name), ['Feat 5', 'Feat 6', 'Feat 7']);
+  assert.deepEqual(grouped.LATER.slice(0, 3).map((f) => f.name), ['Feat 5', 'Feat 6', 'Feat 7']);
 
   // Edge cases
   assert.deepEqual(groupBySprint(null), { NOW: [], NEXT: [], LATER: [] });
   assert.deepEqual(groupBySprint([]), { NOW: [], NEXT: [], LATER: [] });
 });
 
-test('getSprintBadgeClass returns correct CSS badge class name', () => {
+test('getSprintBadgeClass returns correct CSS badge class name and handles non-strings safely', () => {
   assert.equal(getSprintBadgeClass('NOW'), 'badge-now');
   assert.equal(getSprintBadgeClass('now'), 'badge-now');
   assert.equal(getSprintBadgeClass('NEXT'), 'badge-next');
@@ -109,6 +114,23 @@ test('getSprintBadgeClass returns correct CSS badge class name', () => {
   assert.equal(getSprintBadgeClass('later'), 'badge-later');
   assert.equal(getSprintBadgeClass('INVALID'), 'badge-later');
   assert.equal(getSprintBadgeClass(null), 'badge-later');
+  assert.equal(getSprintBadgeClass(undefined), 'badge-later');
+  assert.equal(getSprintBadgeClass(123), 'badge-later');
+  assert.equal(getSprintBadgeClass({}), 'badge-later');
+});
+
+test('getSprintColor returns correct hex color and handles non-strings safely', () => {
+  assert.equal(getSprintColor('NOW'), '#10b981');
+  assert.equal(getSprintColor('now'), '#10b981');
+  assert.equal(getSprintColor('NEXT'), '#f59e0b');
+  assert.equal(getSprintColor('next'), '#f59e0b');
+  assert.equal(getSprintColor('LATER'), '#78716c');
+  assert.equal(getSprintColor('later'), '#78716c');
+  assert.equal(getSprintColor('unknown'), '#78716c');
+  assert.equal(getSprintColor(null), '#78716c');
+  assert.equal(getSprintColor(undefined), '#78716c');
+  assert.equal(getSprintColor(123), '#78716c');
+  assert.equal(getSprintColor({}), '#78716c');
 });
 
 test('getScoreColor returns expected hex color for score threshold', () => {
