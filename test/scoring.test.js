@@ -6,6 +6,7 @@ import {
   sortByRice,
   groupBySprint,
   getSprintBadgeClass,
+  getSprintColor,
   getScoreColor,
 } from '../lib/scoring.js';
 
@@ -111,11 +112,43 @@ test('getSprintBadgeClass returns correct CSS badge class name', () => {
   assert.equal(getSprintBadgeClass(null), 'badge-later');
 });
 
-test('getScoreColor returns expected hex color for score threshold', () => {
+test('getSprintColor returns correct hex color for sprint keys and handles invalid inputs safely', () => {
+  // Valid uppercase
+  assert.equal(getSprintColor('NOW'), '#10b981');
+  assert.equal(getSprintColor('NEXT'), '#f59e0b');
+  assert.equal(getSprintColor('LATER'), '#78716c');
+
+  // Case variations
+  assert.equal(getSprintColor('now'), '#10b981');
+  assert.equal(getSprintColor('Next'), '#f59e0b');
+  assert.equal(getSprintColor('later'), '#78716c');
+
+  // Invalid strings and edge cases
+  assert.equal(getSprintColor('UNKNOWN'), '#78716c');
+  assert.equal(getSprintColor(''), '#78716c');
+  assert.equal(getSprintColor(null), '#78716c');
+  assert.equal(getSprintColor(undefined), '#78716c');
+  assert.equal(getSprintColor(123), '#78716c');
+  assert.equal(getSprintColor({}), '#78716c');
+});
+
+test('getScoreColor returns expected hex color for score threshold and handles invalid inputs safely', () => {
   // Excellent score (> 0.6 max)
   assert.equal(getScoreColor(700, 1000), '#f59e0b');
   // Average score (> 0.3 max)
   assert.equal(getScoreColor(400, 1000), '#f97316');
   // Low score
   assert.equal(getScoreColor(200, 1000), '#f43f5e');
+
+  // String numeric values
+  assert.equal(getScoreColor('700', '1000'), '#f59e0b');
+
+  // Edge cases and invalid inputs (division by zero, NaN, negative/zero max, non-numeric)
+  assert.equal(getScoreColor(500, 0), '#f43f5e');
+  assert.equal(getScoreColor(500, -100), '#f43f5e');
+  assert.equal(getScoreColor(NaN, 1000), '#f43f5e');
+  assert.equal(getScoreColor(null, 1000), '#f43f5e');
+  assert.equal(getScoreColor(undefined, 1000), '#f43f5e');
+  assert.equal(getScoreColor('invalid', 1000), '#f43f5e');
+  assert.equal(getScoreColor(100, 'invalid'), '#f43f5e');
 });

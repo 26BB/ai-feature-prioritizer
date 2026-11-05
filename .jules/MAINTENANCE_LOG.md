@@ -15,6 +15,14 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-10-28 — Safeguard Sprint and Score Color Utilities Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added robust input validation in `getSprintColor` (`lib/scoring.js`) for non-string, null/undefined, and unknown sprint values, safely falling back to `#78716c` (LATER).
+- Safeguarded `getScoreColor` (`lib/scoring.js`) against non-finite scores, non-numeric inputs, and non-positive `max` values (preventing division by zero or NaN), safely defaulting to `#f43f5e`.
+- Added comprehensive unit tests in `test/scoring.test.js` covering `getSprintColor` and `getScoreColor` with valid inputs, case variants, non-numeric inputs, and edge boundary conditions.
+**PR:** `chore(atlas): safeguard sprint and score color utilities [2026-10-28]`
+
 ### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
