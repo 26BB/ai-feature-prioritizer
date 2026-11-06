@@ -6,6 +6,7 @@ import {
   sortByRice,
   groupBySprint,
   getSprintBadgeClass,
+  getSprintColor,
   getScoreColor,
 } from '../lib/scoring.js';
 
@@ -100,7 +101,7 @@ test('groupBySprint groups features into NOW, NEXT, LATER in a single pass', () 
   assert.deepEqual(groupBySprint([]), { NOW: [], NEXT: [], LATER: [] });
 });
 
-test('getSprintBadgeClass returns correct CSS badge class name', () => {
+test('getSprintBadgeClass returns correct CSS badge class name and handles non-string inputs safely', () => {
   assert.equal(getSprintBadgeClass('NOW'), 'badge-now');
   assert.equal(getSprintBadgeClass('now'), 'badge-now');
   assert.equal(getSprintBadgeClass('NEXT'), 'badge-next');
@@ -109,6 +110,25 @@ test('getSprintBadgeClass returns correct CSS badge class name', () => {
   assert.equal(getSprintBadgeClass('later'), 'badge-later');
   assert.equal(getSprintBadgeClass('INVALID'), 'badge-later');
   assert.equal(getSprintBadgeClass(null), 'badge-later');
+  assert.equal(getSprintBadgeClass(undefined), 'badge-later');
+  assert.equal(getSprintBadgeClass(123), 'badge-later');
+  assert.equal(getSprintBadgeClass({}), 'badge-later');
+  assert.equal(getSprintBadgeClass(true), 'badge-later');
+});
+
+test('getSprintColor returns expected hex color for sprint keys and handles non-string inputs safely', () => {
+  assert.equal(getSprintColor('NOW'), '#10b981');
+  assert.equal(getSprintColor('now'), '#10b981');
+  assert.equal(getSprintColor('NEXT'), '#f59e0b');
+  assert.equal(getSprintColor('next'), '#f59e0b');
+  assert.equal(getSprintColor('LATER'), '#78716c');
+  assert.equal(getSprintColor('later'), '#78716c');
+  assert.equal(getSprintColor('UNKNOWN'), '#78716c');
+  assert.equal(getSprintColor(null), '#78716c');
+  assert.equal(getSprintColor(undefined), '#78716c');
+  assert.equal(getSprintColor(123), '#78716c');
+  assert.equal(getSprintColor({}), '#78716c');
+  assert.equal(getSprintColor(true), '#78716c');
 });
 
 test('getScoreColor returns expected hex color for score threshold', () => {
@@ -118,4 +138,13 @@ test('getScoreColor returns expected hex color for score threshold', () => {
   assert.equal(getScoreColor(400, 1000), '#f97316');
   // Low score
   assert.equal(getScoreColor(200, 1000), '#f43f5e');
+  // Numeric string inputs
+  assert.equal(getScoreColor('700', '1000'), '#f59e0b');
+  // Invalid scores or non-positive max thresholds
+  assert.equal(getScoreColor(null, 1000), '#f43f5e');
+  assert.equal(getScoreColor(undefined, 1000), '#f43f5e');
+  assert.equal(getScoreColor('not-a-number', 1000), '#f43f5e');
+  assert.equal(getScoreColor(500, 0), '#f43f5e');
+  assert.equal(getScoreColor(500, -100), '#f43f5e');
+  assert.equal(getScoreColor(500, 'invalid-max'), '#f43f5e');
 });
