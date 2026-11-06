@@ -15,6 +15,14 @@
 
 ## ✅ Completed Log (most recent first)
 
+### 2026-11-06 — Safeguard Sprint Helpers and Score Color Utilities Against Invalid Inputs
+**Status:** ✅ Completed by ATLAS
+**Fixed:**
+- Added type validation to `getSprintBadgeClass` and `getSprintColor` in `lib/scoring.js` to safeguard against non-string inputs (e.g., numbers, booleans, objects) throwing unhandled `TypeError: sprint.toUpperCase is not a function`.
+- Safeguarded `getScoreColor` against non-finite numerical values, `NaN`, non-numeric strings, and non-positive/zero max divisors, falling back to the default low-priority color (`#f43f5e`).
+- Added comprehensive unit tests in `test/scoring.test.js` validating valid string values, numeric strings, non-string primitives, objects, and edge cases.
+**PR:** `chore(atlas): safeguard sprint helpers and score color utilities [2026-11-06]`
+
 ### 2026-10-27 — Safeguard sortByRice Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
 **Fixed:**
