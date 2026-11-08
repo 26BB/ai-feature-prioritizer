@@ -1,3 +1,4 @@
+/* Hallmark stamp: feature-prioritizer-light v1.0.0 | editorial | vellum-paperback */
 /* ========== DESIGN TOKENS — Retro Vintage Paperback & Terracotta Yellow Palette ========== */
 :root {
   /* Backgrounds — Warm Vanilla Cream Paper Base */
@@ -40,7 +41,7 @@
 
   /* Vintage Fonts */
   --font-headline: var(--font-playfair), 'Playfair Display', Georgia, serif;
-  --font-mono: var(--font-mono), 'Space Mono', 'Courier New', monospace;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
   --font-body: var(--font-body-sans), 'Plus Jakarta Sans', sans-serif;
 
   /* Spacing */
@@ -73,7 +74,9 @@
   padding: 0;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: var(--font-body);
@@ -82,7 +85,12 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+}
+
+/* Hallmark Floor: Focus-visible requirement */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -333,6 +341,23 @@ textarea:focus-visible,
   font-size: 2.5rem;
   line-height: 1;
   color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tabular Numerals for Calculations */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+/* Hallmark Floor Rule 7: Reduced Motion Fallback */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ========== UTILS ========== */
