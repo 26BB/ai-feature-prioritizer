@@ -10,10 +10,20 @@
 
 | Date Found | Category | File | Issue | Priority |
 |------------|----------|------|-------|----------|
+| 2026-11-09 | Refactor / Testing | `app/analyze/page.js` | Extract `generateCacheKey` to `lib/scoring.js` and add dedicated unit tests in `test/scoring.test.js` to ensure cache key determinism and isolation | MEDIUM |
 
 ---
 
 ## ✅ Completed Log (most recent first)
+
+### 2026-11-09 — Standdown: Open PR Congestion Threshold Exceeded (8 Open PRs)
+**Status:** ⏸ Standdown / Backlog Logged by ATLAS
+**Details:**
+- Evaluated open PR backlog per ATLAS instructions: Found 8 open PRs (#114, #115, #116, #117, #118, #119, #120, #122) from maintenance sweeps awaiting review/merge.
+- Threshold of ≥ 2 open PRs reached: Stopped creation of new PRs to prevent branch and PR clutter.
+- Audited repository health: test suite passes 100% (`node --test test/*.test.js`), linter passes cleanly (`pnpm lint`).
+- Logged candidate improvement to backlog: Extract `generateCacheKey` from `app/analyze/page.js` into `lib/scoring.js` and add unit test coverage in `test/scoring.test.js`.
+**PR:** None (Halted due to open PR congestion)
 
 ### 2026-10-27 — Safeguard Sprint and Score Formatting Helpers Against Invalid Inputs
 **Status:** ✅ Completed by ATLAS
